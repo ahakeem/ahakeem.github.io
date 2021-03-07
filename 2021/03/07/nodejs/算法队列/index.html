@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="队列，英文 First In First Out 简称 FIFO，遵从先进先出的原则，与 “栈” 相反，在队列的尾部添加元素，在队列的头部删除元素，如果队列中没有元素就称为空队列。 队列对应到生活场景中有很多例子，例如，我们去火车站窗口购票总要排队，先排队的人先购票，有新的人来了则在队尾排队等待前面的完成了依次购票。另外我们的订单超时队列、活动抢购先到先得等等，队列在生活中应用很广泛。 JavaS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法队列">
+<meta property="og:url" content="http://example.com/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="队列，英文 First In First Out 简称 FIFO，遵从先进先出的原则，与 “栈” 相反，在队列的尾部添加元素，在队列的头部删除元素，如果队列中没有元素就称为空队列。 队列对应到生活场景中有很多例子，例如，我们去火车站窗口购票总要排队，先排队的人先购票，有新的人来了则在队尾排队等待前面的完成了依次购票。另外我们的订单超时队列、活动抢购先到先得等等，队列在生活中应用很广泛。 JavaS">
+<meta property="og:locale">
+<meta property="og:image" content="http://example.com/images/algorithm/js-array-queue.png">
+<meta property="og:image" content="http://example.com/images/algorithm/queue-priority.png">
+<meta property="og:image" content="http://example.com/images/algorithm/queue-ring.png">
+<meta property="og:image" content="http://example.com/images/algorithm/queue-ring-test.png">
+<meta property="article:published_time" content="2021-03-07T07:23:51.000Z">
+<meta property="article:modified_time" content="2021-03-07T07:56:01.746Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/algorithm/js-array-queue.png">
+
+<link rel="canonical" href="http://example.com/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>算法队列 | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法队列
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 15:23:51 / Modified: 15:56:01" itemprop="dateCreated datePublished" datetime="2021-03-07T15:23:51+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>队列，英文 First In First Out 简称 FIFO，遵从<strong>先进先出</strong>的原则，与 “栈” 相反，在队列的尾部添加元素，在队列的头部删除元素，如果队列中没有元素就称为空队列。</p>
+<p>队列对应到生活场景中有很多例子，例如，我们去火车站窗口购票总要排队，先排队的人先购票，有新的人来了则在队尾排队等待前面的完成了依次购票。另外我们的订单超时队列、活动抢购先到先得等等，队列在生活中应用很广泛。</p>
+<h3 id="JavaScript-数组实现队列"><a href="#JavaScript-数组实现队列" class="headerlink" title="JavaScript 数组实现队列"></a>JavaScript 数组实现队列</h3><p>JavaScript 中提供的数组功能即可实现一个简单的队列，使用起来也很方便，熟悉相关 API 即可，下面我们来看下基于 JS 数组的入队、出队过程实现。<br><img src="/images/algorithm/js-array-queue.png" alt="js-array-queue"><br>以上图片展示了队列的初始化、入队、出队过程，下面我们采用 JavaScript 原型链的方式实现。</p>
+<ul>
+<li>初始化队列<br>初始化一个存储队列中元素的数据结构，如果未传入默认赋值空数组，传入需先校验类型是否正确。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function QueueStudy(elements) &#123;</span><br><span class="line">    if (elements &amp;&amp; !(elements instanceof Array)) &#123;</span><br><span class="line">        throw new Error(&#39;必须为数组格式！&#39;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.elements &#x3D; elements || [];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>队列添加元素<br>实现一个 enQueue 方法，向队列添加元素，注意只能是队列尾部添加，使用 JavaScript 数组中的 push 方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QueueStudy.prototype.enQueue &#x3D; function(element) &#123;</span><br><span class="line">    this.elements.push(element);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>队列移除元素<br>实现一个 deQueue 方法，向队列头部弹出元素，使用 JavaScript 数组中的 shift 方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QueueStudy.prototype.deQueue &#x3D; function() &#123;</span><br><span class="line">    return this.elements.shift();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+通过 JavaScript 数组实现是很简单的，源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-js.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-js.js</a></li>
+</ul>
+<h3 id="优先队列"><a href="#优先队列" class="headerlink" title="优先队列"></a>优先队列</h3><p>优先队列，元素的添加、删除是基于优先级进行的。一个现实的例子就是机场登机的顺序。头等舱和商务舱乘客的优先级要高于经济舱乘客。在有些国家，老年人和孕妇（或带小孩的妇女）登机时也享有高于其他乘客的优先级。</p>
+<p>优先队列对应到我们生活场景中也有很多例子，例如我们去银行办理业务，一般都会排号先到的先办理，但是呢，还会有 VIP 会员优先办理，又或者去火车站窗口上购票也会有提示军人可以优先办理等等</p>
+<p><strong>实现步骤</strong><br>核心实现继 JavaScript 数组实现队列的例子，对入队函数进行改造如下所示：</p>
+<ul>
+<li>声明 queueElement 对象，包含了要添加到队列的元素</li>
+<li>如果队列为空直接入队</li>
+<li>如果找到一个比 priority 优先级大的元素，插入新元素，这里使用到了 JS 数组中的 splice 方法</li>
+<li>最后如果队列中的所有元素的优先级都小于 priority，则直接在队列尾部入队</li>
+<li>另外打印输出的方法也做了简单修改</li>
+</ul>
+<p>代码示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">PriorityQueue.prototype.enQueue &#x3D; function(element, priority) &#123;</span><br><span class="line">    const queueElement &#x3D; &#123; element, priority &#125;;</span><br><span class="line"></span><br><span class="line">    if (this.isEmpty()) &#123;</span><br><span class="line">        return this.elements.push(queueElement);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let added &#x3D; false;</span><br><span class="line">    for (let i&#x3D;0; i &lt; this.elements.length; i++) &#123;</span><br><span class="line">        if (priority &lt; this.elements[i][&#39;priority&#39;]) &#123;</span><br><span class="line">            added &#x3D; true;</span><br><span class="line">            this.elements.splice(i, 0, queueElement)</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (!added) &#123;</span><br><span class="line">        this.elements.push(queueElement);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PriorityQueue.prototype.print &#x3D; function() &#123;</span><br><span class="line">    console.log(this.elements.map(item &#x3D;&gt; item.element).join(&#39; | &#39;));</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const queue &#x3D; new PriorityQueue();</span><br><span class="line">queue.enQueue(&#39;普通会员1&#39;, 5);</span><br><span class="line">queue.enQueue(&#39;普通会员2&#39;, 10);</span><br><span class="line">queue.print() &#x2F;&#x2F; 普通会员1 | 普通会员2</span><br><span class="line">queue.enQueue(&#39;VIP会员1&#39;, 3);</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员1 | 普通会员1 | 普通会员2</span><br><span class="line">queue.enQueue(&#39;VIP会员2&#39;, 3);</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员1 | VIP会员2 | 普通会员1 | 普通会员2</span><br><span class="line">queue.deQueue();</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员2 | 普通会员1 | 普通会员2</span><br></pre></td></tr></table></figure>
+
+<p><strong>图例展示</strong><br>下面以图例的形式展示以上优先队列程序的运行过程<br><img src="/images/algorithm/queue-priority.png" alt="queue-priority"><br>以上是将优先级最小的元素放置于队列前面，称之为最小优先队列，最大优先队列的实现则反之。源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-priority.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-priority.js</a></p>
+<h3 id="循环队列"><a href="#循环队列" class="headerlink" title="循环队列"></a>循环队列</h3><p>循环队列有些地方也称之为<code>环形队列</code>，其本身是一种环形结构的队列，相较于普通队列有个好处是第一个元素出队之后，剩下元素无需依次向前移位，充分利用了向量空间，在以下介绍中给出了完整的实现过程。</p>
+<p>在设计环形队列时即可顺时针也可逆时针两个方向进行实现，在入队时可根据 (tail % capacity) 规则，进行队尾添加元素，tail 表示队尾的指针，capacity 表示容量，出队同样以（head % capacity）规则操作，head 表示队头指针，下面以长度为 6 的队列进行图文形式说明下实现过程。<br><img src="/images/algorithm/queue-ring.png" alt="queue-ring"></p>
+<p><strong>ES6 实现循环队列</strong><br>以下采用 EcameScript 6 的 Class 写法，实现一个环形队列，需要做哪些点呢？以下列出需要实现的功能点：</p>
+<ul>
+<li>创建队列，初始化队列空间</li>
+<li>检查队列是否为空</li>
+<li>检查队列是否溢出</li>
+<li>入队</li>
+<li>出队</li>
+<li>队列长度</li>
+<li>清空队列</li>
+<li>销毁队列，内存空间也将释放</li>
+<li>队列遍历输出</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">const Init &#x3D; Symbol(&#39;QueueStudy#Init&#39;);</span><br><span class="line"></span><br><span class="line">class QueueStudy &#123;</span><br><span class="line">    constructor (capacity) &#123;</span><br><span class="line">        if (!capacity) &#123;</span><br><span class="line">            throw new Error(&#39;The capacity field is required!&#39;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        this.capacity &#x3D; capacity; &#x2F;&#x2F; 初始化容量</span><br><span class="line">        this[Init]();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 清空队列，内存保留</span><br><span class="line">     *&#x2F;</span><br><span class="line">    clear() &#123;</span><br><span class="line">        this[Init]()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [Init]() &#123;</span><br><span class="line">        this.queue &#x3D; new Array(this.capacity); &#x2F;&#x2F; 初始化队列内存空间</span><br><span class="line">        this.queueLen &#x3D; 0; &#x2F;&#x2F; 初始化队列元素</span><br><span class="line">        this.head &#x3D; 0; &#x2F;&#x2F; 队头</span><br><span class="line">        this.tail &#x3D; 0; &#x2F;&#x2F; 尾部</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列是否为空</span><br><span class="line">     *&#x2F;</span><br><span class="line">    isEmpty() &#123;</span><br><span class="line">        return this.queueLen &#x3D;&#x3D;&#x3D; 0 ? true : false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列是否溢出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    isOverflow() &#123;</span><br><span class="line">        return this.queueLen &#x3D;&#x3D;&#x3D; this.capacity</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 入队</span><br><span class="line">     *&#x2F;</span><br><span class="line">    enQueue(element) &#123;</span><br><span class="line">        if (this.isOverflow()) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        this.queue[this.tail] &#x3D; element;</span><br><span class="line">        this.tail++;</span><br><span class="line">        this.tail &#x3D; this.tail % this.capacity;</span><br><span class="line">        this.queueLen++;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 出队</span><br><span class="line">     *&#x2F;</span><br><span class="line">    deQueue() &#123;</span><br><span class="line">        if (this.isEmpty()) &#123;</span><br><span class="line">            throw new Error(&#39;队列为空&#39;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            const element &#x3D; this.queue[this.head];</span><br><span class="line">            this.head++; &#x2F;&#x2F; 队头位置移动</span><br><span class="line">            this.head &#x3D; this.head % this.capacity;</span><br><span class="line">            this.queueLen--;</span><br><span class="line">            return element;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列长度</span><br><span class="line">     *&#x2F;</span><br><span class="line">    len() &#123;</span><br><span class="line">        return this.queueLen;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 销毁队列，内存回收</span><br><span class="line">     *&#x2F;</span><br><span class="line">    destroy() &#123;</span><br><span class="line">        this.queue &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列元素遍历</span><br><span class="line">     *&#x2F;</span><br><span class="line">    traversing() &#123;</span><br><span class="line">        console.log(&#39;------------traversing start------------&#39;);</span><br><span class="line">        </span><br><span class="line">        for (let i&#x3D;this.head; i&lt;this.queueLen + this.head; i++) &#123;</span><br><span class="line">            console.log(this.queue[i % this.capacity]);</span><br><span class="line">        &#125;</span><br><span class="line">        console.log(&#39;------------traversing end------------\n&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">const q1 &#x3D; new QueueStudy(6);</span><br><span class="line"></span><br><span class="line">q1.enQueue(&#39;a&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">q1.enQueue(&#39;b&#39;);</span><br><span class="line">q1.enQueue(&#39;c&#39;);</span><br><span class="line">q1.enQueue(&#39;d&#39;);</span><br><span class="line">q1.enQueue(&#39;e&#39;);</span><br><span class="line">q1.enQueue(&#39;f&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.enQueue(&#39;g&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.enQueue(&#39;h&#39;);</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.traversing();</span><br><span class="line">q1.clear();</span><br><span class="line">q1.traversing();</span><br></pre></td></tr></table></figure>
+<p><img src="/images/algorithm/queue-ring-test.png" alt="queue-ring-test"><br>源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-ring.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-ring.js</a><br>推荐我在学习数据结构中看的两本书 学习<a target="_blank" rel="noopener" href="https://book.douban.com/subject/27129352/">JavaScript数据结构与算法（第2版）</a>、图解数据结构使用 Python</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/" rel="prev" title="JavaScript 扩展系列">
+      <i class="fa fa-chevron-left"></i> JavaScript 扩展系列
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E6%A0%88/" rel="next" title="算法栈">
+      算法栈 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript-%E6%95%B0%E7%BB%84%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97"><span class="nav-number">1.</span> <span class="nav-text">JavaScript 数组实现队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97"><span class="nav-number">2.</span> <span class="nav-text">优先队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97"><span class="nav-number">3.</span> <span class="nav-text">循环队列</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

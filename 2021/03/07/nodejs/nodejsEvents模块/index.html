@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在 Node.js 中一个很重要的模块 Events（EventEmitter 事件触发器），也称为发布&#x2F;订阅模式，为什么说它重要，因为在 Node.js 中绝大多数模块都依赖于此，例如 Net、HTTP、FS、Stream 等，除了这些系统模块比较知名的 Express、Koa 框架中也能看到 EventEmitter 的踪迹。 谈起事件前端的同学可能会联想到浏览器中的事件，与浏览器中的事件不同">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejsEvents模块">
+<meta property="og:url" content="http://example.com/2021/03/07/nodejs/nodejsEvents%E6%A8%A1%E5%9D%97/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="在 Node.js 中一个很重要的模块 Events（EventEmitter 事件触发器），也称为发布&#x2F;订阅模式，为什么说它重要，因为在 Node.js 中绝大多数模块都依赖于此，例如 Net、HTTP、FS、Stream 等，除了这些系统模块比较知名的 Express、Koa 框架中也能看到 EventEmitter 的踪迹。 谈起事件前端的同学可能会联想到浏览器中的事件，与浏览器中的事件不同">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-03-07T11:47:19.000Z">
+<meta property="article:modified_time" content="2021-03-07T13:33:26.367Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="nodejs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/03/07/nodejs/nodejsEvents%E6%A8%A1%E5%9D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>nodejsEvents模块 | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/nodejsEvents%E6%A8%A1%E5%9D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nodejsEvents模块
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 19:47:19 / Modified: 21:33:26" itemprop="dateCreated datePublished" datetime="2021-03-07T19:47:19+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在 Node.js 中一个很重要的模块 Events（EventEmitter 事件触发器），也称为发布/订阅模式，为什么说它重要，因为在 Node.js 中绝大多数模块都依赖于此，例如 Net、HTTP、FS、Stream 等，除了这些系统模块比较知名的 Express、Koa 框架中也能看到 EventEmitter 的踪迹。</p>
+<p>谈起事件前端的同学可能会联想到浏览器中的事件，与浏览器中的事件不同的是它不存在事件冒泡、preventDefault()、stopPropagation() 等方法，EventEmitter 提供了 on()、once()、removeListener() 等方法来对事件进行监听移除。</p>
+<h2 id="通过本文你能学到什么"><a href="#通过本文你能学到什么" class="headerlink" title="通过本文你能学到什么"></a>通过本文你能学到什么</h2><ul>
+<li>了解 EventEmitter 是什么？一些基础 API 的使用</li>
+<li>在 Node.js 的一些核心模块（Stream、Net）中是如何使用 EventEmitter 的?</li>
+<li>主流的 Express/Koa 框架也是基于此实现，我们如何实现一个基于 EventEmitter 的自定义对象？</li>
+<li>高并发场景下雪崩问题如何利用 EventEmitter 特性解决？</li>
+<li>事件是否等价于异步？</li>
+</ul>
+<h3 id="先从一个简单的例子开始"><a href="#先从一个简单的例子开始" class="headerlink" title="先从一个简单的例子开始"></a>先从一个简单的例子开始</h3><p>事件驱动是 Node.js 的核心，怎么体现事件驱动呢？通常一种最常见的形式就是回调，触发一次事件，然后通过回调来接收一些处理，关于这种形式在 JavaScript 编程中屡见不鲜，例如 fs.readFile(path, callback)、TCP 中的 server.on(‘data’, callback) 等。</p>
+<h3 id="一个简单的实现"><a href="#一个简单的实现" class="headerlink" title="一个简单的实现"></a>一个简单的实现</h3><p>主要用到以下两个 API，触发、注册一个监听函数。</p>
+<ul>
+<li>emit：触发一个监听函数</li>
+<li>on：注册一个监听函数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const EventEmitter &#x3D; require(&#39;events&#39;).EventEmitter;</span><br><span class="line">const emitter &#x3D; new EventEmitter();</span><br><span class="line"></span><br><span class="line">emitter.on(&quot;起床&quot;, function(time) &#123;</span><br><span class="line">    console.log(&#96;早上 $&#123;time&#125; 开始起床，新的一天加油！&#96;)</span><br><span class="line">    &#x2F;&#x2F;console.log(&#96;关注公众号Nodejs技术栈，早上 $&#123;time&#125; 点开始起床阅读，从 Node.js 技术栈&#96;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">emitter.emit(&quot;起床&quot;, &quot;6:00&quot;);</span><br></pre></td></tr></table></figure>
+除了上面使用 emit、on 方法外还有一些很有用的 API，你也许需要先去 Node.js 官网（<a target="_blank" rel="noopener" href="http://nodejs.cn/api/events.html%EF%BC%89%E5%81%9A%E4%B8%80%E4%B8%AA%E4%BA%86%E8%A7%A3%EF%BC%8C%E9%82%A3%E9%87%8C%E4%BB%8B%E7%BB%8D%E7%9A%84%E5%BE%88%E5%85%A8%EF%BC%8C%E5%9C%A8%E6%8E%A5%E6%9D%A5%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B8%AD%EF%BC%8C%E6%88%91%E4%BC%9A%E5%9C%A8%E4%B8%80%E4%BA%9B%E7%A4%BA%E4%BE%8B%E4%B8%AD%E6%BC%94%E7%A4%BA%E4%B8%80%E9%83%A8%E5%88%86%E7%9A%84%E6%A0%B8%E5%BF%83">http://nodejs.cn/api/events.html）做一个了解，那里介绍的很全，在接来的学习中，我会在一些示例中演示一部分的核心</a> API 如何应用。</li>
+</ul>
+<h2 id="自定义-EventEmitter-类"><a href="#自定义-EventEmitter-类" class="headerlink" title="自定义 EventEmitter 类"></a>自定义 EventEmitter 类</h2><p>当你了解了 EventEmitter，你会发现它在 Node.js 中无所不在，Node.js 的核心模块、Express/Koa 等知名框架中，你都会发现它的踪迹，例如，下面在 Koa 中 new 一个 app 对象，通过 app.emit() 触发一个事件，实现在整个系统中进行传递。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const Koa &#x3D; require(&#39;koa&#39;);</span><br><span class="line">const app &#x3D; new Koa();</span><br><span class="line"></span><br><span class="line">app.on(&quot;koa&quot;, function() &#123;</span><br><span class="line">    console.log(&quot;在 Koa 中使用 EventEmitter&quot;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.emit(&quot;koa&quot;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="系统模块自定义-EventEmitter-类的实现"><a href="#系统模块自定义-EventEmitter-类的实现" class="headerlink" title="系统模块自定义 EventEmitter 类的实现"></a>系统模块自定义 EventEmitter 类的实现</h3><p>在这开始之前让我们先看下 Node.js 中的 Stream、Net 模块是怎么实现的？<br>在 Stream 模块中的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;node&#x2F;blob&#x2F;v10.x&#x2F;lib&#x2F;internal&#x2F;streams&#x2F;legacy.js#L6</span><br><span class="line"></span><br><span class="line">const EE &#x3D; require(&#39;events&#39;);</span><br><span class="line">const util &#x3D; require(&#39;util&#39;);</span><br><span class="line"></span><br><span class="line">function Stream() &#123;</span><br><span class="line">  EE.call(this);</span><br><span class="line">&#125;</span><br><span class="line">util.inherits(Stream, EE);</span><br></pre></td></tr></table></figure>
+<p>在 Net 模块中的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;node&#x2F;blob&#x2F;v10.x&#x2F;lib&#x2F;net.js#L1121</span><br><span class="line">const EventEmitter &#x3D; require(&#39;events&#39;);</span><br><span class="line">const util &#x3D; require(&#39;util&#39;);</span><br><span class="line"></span><br><span class="line">function Server(options, connectionListener) &#123;</span><br><span class="line">  if (!(this instanceof Server))</span><br><span class="line">    return new Server(options, connectionListener);</span><br><span class="line"></span><br><span class="line">  EventEmitter.call(this);</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line">util.inherits(Server, EventEmitter);</span><br></pre></td></tr></table></figure>
+<p>观察上面两个 Node.js 模块的自定义 EventEmitter 实现，都有一个共同点使用了 util.inherits(constructor, superConstructor) 方法，这个是 Node.js 中的工具类，这让我想起来了之前在看 JavaScript 权威指南（第 6 章 122 页）中的一个方法 function inherit(p)，意思为<code>通过原型继承创建一个新对象，而 util.inherits 是通过原型复制来实现的对象间的继承。</code></p>
+<p>例如上面的 util.inherits(Server, EventEmitter) 函数，也就是 Server 对象继承了 EventEmitter 在原型中定义的函数，也就拥有了 EventEmitter 事件触发器中的 on、emit 等方法。但是现在 Node.js 官网不建议使用 util.inherits() 方法，而是使用 ES6 中的 class 和 extends 关键词获得语言层面的继承支持，那么在原声 JS 中还是使用 <code>Object.setPrototypeOf()</code> 来实现的继承，因此在 Node.js 12x 版本中你会看到如下代码实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;node&#x2F;blob&#x2F;v12.x&#x2F;lib&#x2F;net.js#L1142</span><br><span class="line">function Server(options, connectionListener) &#123;</span><br><span class="line">  if (!(this instanceof Server))</span><br><span class="line">    return new Server(options, connectionListener);</span><br><span class="line"></span><br><span class="line">  EventEmitter.call(this);</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;node&#x2F;blob&#x2F;v12.x&#x2F;lib&#x2F;net.js#L1188</span><br><span class="line">Object.setPrototypeOf(Server.prototype, EventEmitter.prototype);</span><br><span class="line">Object.setPrototypeOf(Server, EventEmitter);</span><br></pre></td></tr></table></figure>
+<h3 id="实现一个基于-EventEmitter-的自定义类"><a href="#实现一个基于-EventEmitter-的自定义类" class="headerlink" title="实现一个基于 EventEmitter 的自定义类"></a>实现一个基于 EventEmitter 的自定义类</h3><p>这里用一个例子一天的计划来展示如何基于 EventEmitter 自定义类，在不同的时间触发相应的事件，通过监听事件来做一些事情。<br>下面展示了我们自定义的 OneDayPlan 是如何继承于 EventEmitter</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">const EventEmitter &#x3D; require(&#39;events&#39;);</span><br><span class="line">const oneDayPlanRun &#x3D; &#123;</span><br><span class="line">    &quot;6:00&quot;: function() &#123;</span><br><span class="line">        console.log(&#96;现在是早上 6:00，起床，开始新的一天加油！&#96;);</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;7:00&quot;: function() &#123;</span><br><span class="line">        console.log(&#96;现在是早上 7:00，吃早饭！&#96;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function OneDayPlan() &#123;</span><br><span class="line">    EventEmitter.call(this);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Object.setPrototypeOf(OneDayPlan.prototype, EventEmitter.prototype);</span><br><span class="line">Object.setPrototypeOf(OneDayPlan, EventEmitter);</span><br></pre></td></tr></table></figure>
+<p>现在让我们实例化上面自定义的 OneDayPlan 类，实现事件的触发/监听</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">const oneDayPlan &#x3D; new OneDayPlan();</span><br><span class="line"></span><br><span class="line">oneDayPlan.on(&quot;6:00&quot;, function() &#123;</span><br><span class="line">    oneDayPlanRun[&quot;6:00&quot;]();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">oneDayPlan.on(&quot;7:00&quot;, function() &#123;</span><br><span class="line">    oneDayPlanRun[&quot;7:00&quot;]();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">async function doMain() &#123;</span><br><span class="line">    oneDayPlan.emit(&quot;6:00&quot;);</span><br><span class="line"></span><br><span class="line">    await sleep(2000); &#x2F;&#x2F; 间隔 2 秒钟输出</span><br><span class="line"></span><br><span class="line">    oneDayPlan.emit(&quot;7:00&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">doMain();</span><br><span class="line"></span><br><span class="line">async function sleep(s) &#123;</span><br><span class="line">    return new Promise(function(reslve) &#123;</span><br><span class="line">        setTimeout(function() &#123;</span><br><span class="line">            reslve(1);</span><br><span class="line">        &#125;, s);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">现在是早上 6:00，起床，开始新的一天加油！</span><br><span class="line">现在是早上 7:00，吃早饭！</span><br></pre></td></tr></table></figure>
+
+<h2 id="EventEmitter-解决高并发下雪崩问题"><a href="#EventEmitter-解决高并发下雪崩问题" class="headerlink" title="EventEmitter 解决高并发下雪崩问题"></a>EventEmitter 解决高并发下雪崩问题</h2><p>对于需要查询 DB 的数据，我们一般称之为热点数据，这类数据通常是要在 DB 之上增加一层缓存，但是在高并发场景下，如果这个缓存正好失效，此时就会有大量的请求直接涌入数据库，对数据库造成一定的压力，对于缓存雪崩的解决方案，网上也不乏有更好的解决方案，但是在 Node.js 中我们可以利用 events 模块提供的 once() 方法来解决。</p>
+<h3 id="once-方法介绍"><a href="#once-方法介绍" class="headerlink" title="once 方法介绍"></a>once 方法介绍</h3><p>当触发多次相同名称事件，通过 once 添加的侦听器只会执行一次，并且在执行之后会接触与它关联的事件，相当于 on 方法和 removeListener 方法的组合，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">proxy.once(&#39;我很帅&#39;, function() &#123;</span><br><span class="line">    console.log(&#39;once: 我很帅！&#39;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">proxy.on(&#39;我很帅&#39;, function() &#123;</span><br><span class="line">    console.log(&#39;on: 我很帅！&#39;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">proxy.emit(&#39;我很帅&#39;);</span><br><span class="line">proxy.emit(&#39;我很帅&#39;);</span><br><span class="line">proxy.emit(&#39;我很帅&#39;);</span><br></pre></td></tr></table></figure>
+<p>上面触发了三次 “我很帅” 事件，on 方法乖乖的重复了三次，但是 once 方法说我知道我很帅我只说一次就够了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">once: 我很帅！</span><br><span class="line">on: 我很帅！</span><br><span class="line">on: 我很帅！</span><br><span class="line">on: 我很帅！</span><br></pre></td></tr></table></figure>
+<p>上面说的 once 方法是 on 和 removeListener 的结合体，在源码中也可看到 <a target="_blank" rel="noopener" href="https://github.com/nodejs/node/blob/v10.x/lib/events.js#L282">https://github.com/nodejs/node/blob/v10.x/lib/events.js#L282</a> once 方法接收到信息之后使用 on 方法监听，在 onceWrapper 方法中通过 removeListener 删掉监听函数自身。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">function onceWrapper(...args) &#123;</span><br><span class="line">  if (!this.fired) &#123;</span><br><span class="line">    this.target.removeListener(this.type, this.wrapFn);</span><br><span class="line">    this.fired &#x3D; true;</span><br><span class="line">    return Reflect.apply(this.listener, this.target, args);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function _onceWrap(target, type, listener) &#123;</span><br><span class="line">  var state &#x3D; &#123; fired: false, wrapFn: undefined, target, type, listener &#125;;</span><br><span class="line">  var wrapped &#x3D; onceWrapper.bind(state);</span><br><span class="line">  wrapped.listener &#x3D; listener;</span><br><span class="line">  state.wrapFn &#x3D; wrapped;</span><br><span class="line">  return wrapped;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">EventEmitter.prototype.once &#x3D; function once(type, listener) &#123;</span><br><span class="line">  checkListener(listener);</span><br><span class="line"></span><br><span class="line">  this.on(type, _onceWrap(this, type, listener));</span><br><span class="line">  return this;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="编码实现"><a href="#编码实现" class="headerlink" title="编码实现"></a>编码实现</h3><p>利用 once 方法将所有请求的回调都压入事件队列中，对于相同的文件名称查询保证在同一个查询开始到结束的过程中永远只有一次，如果是 DB 查询也避免了重复数据带来的数据库查询开销。代码编写参考了深入浅出 Nodejs Events 模块一书，这里使用 fs 进行文件查询，如果是 DB 也同理，另外注意使用 status 键值对形式保存了触发/监听的事件名称和状态，最后建议进行清除，避免引起大对象导致内存泄露问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line">const fs &#x3D; require(&#39;fs&#39;);</span><br><span class="line">const status &#x3D; &#123;&#125;;</span><br><span class="line"></span><br><span class="line">const select &#x3D; function(file, filename, cb) &#123;</span><br><span class="line">    emitter.once(file, cb);</span><br><span class="line">    </span><br><span class="line">    if (status[file] &#x3D;&#x3D;&#x3D; undefined) &#123;</span><br><span class="line">        status[file] &#x3D; &#39;ready&#39;; &#x2F;&#x2F; 不存在设置默认值</span><br><span class="line">    &#125;</span><br><span class="line">    if (status[file] &#x3D;&#x3D;&#x3D; &#39;ready&#39;) &#123;</span><br><span class="line">        status[file] &#x3D; &#39;pending&#39;;</span><br><span class="line">        fs.readFile(file, function(err, result) &#123;</span><br><span class="line">            console.log(filename);</span><br><span class="line">            emitter.emit(file, err, result.toString());</span><br><span class="line">            status[file] &#x3D; &#39;ready&#39;;</span><br><span class="line">            </span><br><span class="line">            setTimeout(function() &#123;</span><br><span class="line">                delete status[file];</span><br><span class="line">            &#125;, 1000);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">for (let i&#x3D;1; i&lt;&#x3D;11; i++) &#123;</span><br><span class="line">    if (i % 2 &#x3D;&#x3D;&#x3D; 0) &#123;</span><br><span class="line">        select(&#96;&#x2F;tmp&#x2F;a.txt&#96;, &#39;a 文件&#39;, function(err, result) &#123;</span><br><span class="line">            console.log(&#39;err: &#39;, err, &#39;result: &#39;, result);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        select(&#96;&#x2F;tmp&#x2F;b.txt&#96;, &#39;b 文件&#39;, function(err, result) &#123;</span><br><span class="line">            console.log(&#39;err: &#39;, err, &#39;result: &#39;, result);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>控制台运行以上代码进行测试，虽然发起了多次文件查询请求，fs 模块真正只执行了两次，分别查询了 a、b 两个文件，对于相同的请求，通过利用事件监听器 once 的特性避免了相同条件重复查询。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">b 文件</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">err:  null result:  b</span><br><span class="line">a 文件</span><br><span class="line">err:  null result:  a</span><br><span class="line">err:  null result:  a</span><br><span class="line">err:  null result:  a</span><br><span class="line">err:  null result:  a</span><br><span class="line">err:  null result:  a</span><br></pre></td></tr></table></figure>
+<p>默认情况下，如果为特定事件添加了超过 10 个监听器，则 EventEmitter 会打印一个警告。 但是，并不是所有的事件都要限制 10 个监听器。 emitter.setMaxListeners() 方法可以为指定的 EventEmitter 实例修改限制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(node:88835) Warning: Possible EventEmitter memory leak detected. 11 &#x2F;tmp&#x2F;b.txt listeners added. Use emitter.setMaxListeners() to increase limit</span><br><span class="line">(node:88835) Warning: Possible EventEmitter memory leak detected. 11 &#x2F;tmp&#x2F;a.txt listeners added. Use emitter.setMaxListeners() to increase limit</span><br></pre></td></tr></table></figure>
+
+<h2 id="EventEmitter-循环调用问题"><a href="#EventEmitter-循环调用问题" class="headerlink" title="EventEmitter 循环调用问题"></a>EventEmitter 循环调用问题</h2><p>如下代码所示，尝试分析以下两种情况的输出结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line">const test &#x3D; () &#x3D;&gt; console.log(&#39;test&#39;);</span><br><span class="line"></span><br><span class="line">&#x2F;** 例一 *&#x2F;</span><br><span class="line">emitter.on(&#39;test&#39;, function() &#123;</span><br><span class="line">    test();</span><br><span class="line">    emitter.emit(&#39;test&#39;);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">emitter.emit(&#39;test&#39;);</span><br><span class="line"></span><br><span class="line">&#x2F;** 例二 *&#x2F;</span><br><span class="line">emitter.on(&#39;test&#39;, function() &#123;</span><br><span class="line">    test();</span><br><span class="line">    emitter.on(&#39;test&#39;, test);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">emitter.emit(&#39;test&#39;);</span><br></pre></td></tr></table></figure>
+<p>例一因为在监听函数 on 里执行了 emit 事件触发，会陷入死循环导致栈溢出。<br>例二结果为只输出一次 test，emitter.on(‘test’, test); 这行代码只是在当前的事件回调中添加了一个事件监听器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">例一：RangeError: Maximum call stack size exceeded</span><br><span class="line">例二：test</span><br></pre></td></tr></table></figure>
+
+<h2 id="同步还是异步"><a href="#同步还是异步" class="headerlink" title="同步还是异步"></a>同步还是异步</h2><p>换一个问题事件是否等于异步？答案是不等的，看以下代码示例执行顺序，先输出 111 再输出 222，为什么这样？摘自官方 API 的一段话 <code>“EventEmitter 会按照监听器注册的顺序同步地调用所有监听器。 所以必须确保事件的排序正确，且避免竞态条件。”</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line"></span><br><span class="line">emitter.on(&#39;test&#39;,function()&#123;</span><br><span class="line">    console.log(111)</span><br><span class="line">&#125;);</span><br><span class="line">emitter.emit(&#39;test&#39;);</span><br><span class="line">console.log(222)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 输出</span><br><span class="line">&#x2F;&#x2F; 111</span><br><span class="line">&#x2F;&#x2F; 222</span><br></pre></td></tr></table></figure>
+<p>也可以使用 setImmediate() 或 process.nextTick() 切换到异步模式，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line"></span><br><span class="line">emitter.on(&#39;test&#39;,function()&#123;</span><br><span class="line">    setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">        console.log(111);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">emitter.emit(&#39;test&#39;);</span><br><span class="line">console.log(222)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 输出</span><br><span class="line">&#x2F;&#x2F; 222</span><br><span class="line">&#x2F;&#x2F; 111</span><br></pre></td></tr></table></figure>
+
+<h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>最后一个最重要的错误处理，在 Node.js 中错误处理是一个需要重视的事情，一旦抛出一个错误没有人为处理，可能造成的结果是进程自动退出，如下代码因为事件触发器带有错误信息，而没有相应的错误监听在，会导致进程退出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line"></span><br><span class="line">emitter.emit(&#39;error&#39;, new Error(&#39;This is a error&#39;));</span><br><span class="line">console.log(&#39;test&#39;);</span><br></pre></td></tr></table></figure>
+<p>调用后程序崩溃导致 Node 进程自动退出，因受上一行的影响，之后的 console.log(‘test’); 也不会得到执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">events.js:167</span><br><span class="line">      throw er; &#x2F;&#x2F; Unhandled &#39;error&#39; event</span><br><span class="line">      ^</span><br><span class="line"></span><br><span class="line">Error: This is a error</span><br></pre></td></tr></table></figure>
+<p>作为最佳实践，应该始终为 ‘error’ 事件注册监听器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const events &#x3D; require(&#39;events&#39;);</span><br><span class="line">const emitter &#x3D; new events.EventEmitter();</span><br><span class="line"></span><br><span class="line">emitter.on(&#39;error&#39;, function(err) &#123;</span><br><span class="line">    console.error(err);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">emitter.emit(&#39;error&#39;, new Error(&#39;This is a error&#39;));</span><br><span class="line"></span><br><span class="line">console.log(&#39;test&#39;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Error: This is a error</span><br><span class="line">    at Object.&lt;anonymous&gt; ...</span><br><span class="line">test</span><br></pre></td></tr></table></figure>
+<p>如上代码所示，第一次调用后错误 error 事件会被监听，Node 进程也不会像之前的程序一样会自动退出，console.log(‘test’); 也得到了正常运行。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>许多 Node.js 成功的模块和框架都是基于 EventEmitter 的，学会 EventEmitter 的使用，并且知道该在什么时候去使用是非常有用的</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/nodejs%E6%A8%A1%E5%9D%97%E6%9C%BA%E5%88%B6/" rel="prev" title="nodejs模块机制">
+      <i class="fa fa-chevron-left"></i> nodejs模块机制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/nodejs_Crypto%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%A8%A1%E5%9D%97/" rel="next" title="Crypto加解密模块">
+      Crypto加解密模块 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%9C%AC%E6%96%87%E4%BD%A0%E8%83%BD%E5%AD%A6%E5%88%B0%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">通过本文你能学到什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E4%BB%8E%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90%E5%BC%80%E5%A7%8B"><span class="nav-number">1.1.</span> <span class="nav-text">先从一个简单的例子开始</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">一个简单的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-EventEmitter-%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">自定义 EventEmitter 类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E8%87%AA%E5%AE%9A%E4%B9%89-EventEmitter-%E7%B1%BB%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">系统模块自定义 EventEmitter 类的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E5%9F%BA%E4%BA%8E-EventEmitter-%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">实现一个基于 EventEmitter 的自定义类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EventEmitter-%E8%A7%A3%E5%86%B3%E9%AB%98%E5%B9%B6%E5%8F%91%E4%B8%8B%E9%9B%AA%E5%B4%A9%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">EventEmitter 解决高并发下雪崩问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#once-%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.1.</span> <span class="nav-text">once 方法介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.2.</span> <span class="nav-text">编码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EventEmitter-%E5%BE%AA%E7%8E%AF%E8%B0%83%E7%94%A8%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">EventEmitter 循环调用问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E8%BF%98%E6%98%AF%E5%BC%82%E6%AD%A5"><span class="nav-number">5.</span> <span class="nav-text">同步还是异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

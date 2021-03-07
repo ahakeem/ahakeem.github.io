@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="正则表达式扩展 构造函数 ES5声明对象 情况一 第一个参数是字符; 第二个是修饰符  123let regex &#x3D; new RegExp(&#39;xyz&#39;, &#39;i&#39;);console.log(regex.test(&#39;xyz123&#39;), regex.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true 构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript 扩展系列">
+<meta property="og:url" content="http://example.com/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="正则表达式扩展 构造函数 ES5声明对象 情况一 第一个参数是字符; 第二个是修饰符  123let regex &#x3D; new RegExp(&#39;xyz&#39;, &#39;i&#39;);console.log(regex.test(&#39;xyz123&#39;), regex.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true 构">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-03-07T04:44:24.000Z">
+<meta property="article:modified_time" content="2021-03-07T05:35:49.112Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>JavaScript 扩展系列 | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript 扩展系列
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 12:44:24 / Modified: 13:35:49" itemprop="dateCreated datePublished" datetime="2021-03-07T12:44:24+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="正则表达式扩展"><a href="#正则表达式扩展" class="headerlink" title="正则表达式扩展"></a>正则表达式扩展</h3><ul>
+<li>构造函数 ES5声明对象 情况一<blockquote>
+<p>第一个参数是字符; 第二个是修饰符</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let regex &#x3D; new RegExp(&#39;xyz&#39;, &#39;i&#39;);</span><br><span class="line"></span><br><span class="line">console.log(regex.test(&#39;xyz123&#39;), regex.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true</span><br></pre></td></tr></table></figure></li>
+<li>构造函数 ES5声明对象 情况二<blockquote>
+<p>第一个参数是正则表达式; 但是此时不接受第二个参数是一个修饰符，否则会报错</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let regex2 &#x3D; new RegExp(&#x2F;xyz&#x2F;i); &#x2F;&#x2F; 正确</span><br><span class="line">let regex3 &#x3D; new RegExp(&#x2F;xyz&#x2F;i, &#39;i&#39;); &#x2F;&#x2F; 错误；Uncaught TypeError: Cannot supply flags when constructing one RegExp </span><br><span class="line"></span><br><span class="line">console.log(regex2.test(&#39;xyz123&#39;), regex2.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true</span><br></pre></td></tr></table></figure></li>
+<li>构造函数 ES6中的声明对象<blockquote>
+<p>ES6改变了此行为，第一个参数是正则表达式，第二个参数也可以在指定修饰符。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let regex3 &#x3D; new RegExp(&#x2F;abc&#x2F;ig, &#39;i&#39;);</span><br><span class="line"></span><br><span class="line">console.log(regex3.flags); &#x2F;&#x2F; i</span><br></pre></td></tr></table></figure>
+以上示例中，原有正则对象的修饰符是ig，它会被第二个参数i覆盖。</li>
+</ul>
+<h3 id="字符串扩展"><a href="#字符串扩展" class="headerlink" title="字符串扩展"></a>字符串扩展</h3><ul>
+<li>Unicode表示法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;a&#39;,&#96;\u0061&#96;); &#x2F;&#x2F;a a</span><br><span class="line">  &#x2F;&#x2F;乱码，因为\u20bb7转换成二进制以大于0xFFFF，会当做两个字符处理</span><br><span class="line">  console.log(&#39;s&#39;,&#96;\u20BB7&#96;); &#x2F;&#x2F;s ₻7</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES6中处理大于0xFFFF这种情况，用大括号&#123;&#125;把这种Unicode编码包括起来</span><br><span class="line">  console.log(&#39;s&#39;,&#96;\u&#123;20BB7&#125;&#96;); &#x2F;&#x2F;s 𠮷</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let s&#x3D;&#39;𠮷&#39;;</span><br><span class="line">  &#x2F;&#x2F;取长度，四个字节为两个字符</span><br><span class="line">  console.log(&#39;length&#39;,s.length); &#x2F;&#x2F;2</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES5中charAt()取字符，charCodeAt()取码值</span><br><span class="line">  console.log(&#39;0&#39;,s.charAt(0)); &#x2F;&#x2F;0 �</span><br><span class="line">  console.log(&#39;1&#39;,s.charAt(1)); &#x2F;&#x2F;1 �</span><br><span class="line">  console.log(&#39;at0&#39;,s.charCodeAt(0)); &#x2F;&#x2F;at0 55362</span><br><span class="line">  console.log(&#39;at1&#39;,s.charCodeAt(1)); &#x2F;&#x2F;at1 57271</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES6中codePointAt()取码值，toString(16)转换成16进制</span><br><span class="line">  let s1&#x3D;&#39;𠮷a&#39;;</span><br><span class="line">  console.log(&#39;length&#39;,s1.length);</span><br><span class="line">  console.log(&#39;code0&#39;,s1.codePointAt(0)); &#x2F;&#x2F;code0 134071</span><br><span class="line">  console.log(&#39;code0&#39;,s1.codePointAt(0).toString(16)); &#x2F;&#x2F;code0 20bb7</span><br><span class="line">  console.log(&#39;code1&#39;,s1.codePointAt(1)); &#x2F;&#x2F;code1 57271</span><br><span class="line">  console.log(&#39;code2&#39;,s1.codePointAt(2)); &#x2F;&#x2F;code2 97</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;ES5中fromCharCode()处理大于两个字节，会乱码</span><br><span class="line">  console.log(String.fromCharCode(&quot;0x20bb7&quot;)); &#x2F;&#x2F;ஷ</span><br><span class="line">  &#x2F;&#x2F;ES6中fromCodePoint()处理大于两个字节，正常显示</span><br><span class="line">  console.log(String.fromCodePoint(&quot;0x20bb7&quot;)); &#x2F;&#x2F;𠮷</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>遍历接口<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;字符串遍历器接口</span><br><span class="line">let str&#x3D;&#39;\u&#123;20bb7&#125;abc&#39;;</span><br><span class="line">&#x2F;&#x2F;ES5处理会将&#123;20bb7&#125;按照两个字节处理，造成前一个字符乱码</span><br><span class="line">for(let i&#x3D;0;i&lt;str.length;i++)&#123;</span><br><span class="line">  console.log(&#39;es5&#39;,str[i]);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果:� � a b c</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;ES6使用for of遍历处理，可以自动处理大于0xFFFF这种情况</span><br><span class="line">for(let code of str)&#123;</span><br><span class="line">  console.log(&#39;es6&#39;,code);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果:𠮷 a b c</span><br></pre></td></tr></table></figure></li>
+<li>模板字符串<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let name &#x3D; &quot;张三&quot;;</span><br><span class="line">  let info &#x3D; &quot;我来自China&quot;;</span><br><span class="line">  let str &#x3D; &#96;I am $&#123;name&#125; , $&#123;info&#125;&#96;;</span><br><span class="line">  console.log(str);</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;row对所有的斜杠进行了转义，原样输出</span><br><span class="line">  console.log(String.raw&#96;Hi\n$&#123;1+2&#125;&#96;);&#x2F;&#x2F;Hi\n3</span><br><span class="line">  console.log(&#96;Hi\n$&#123;1+2&#125;&#96;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>标签模板<blockquote>
+<p>标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的是函数，紧跟在后面的模板字符串就是它的参数。<br>两个作用： 第一在过滤 html 字符串的时候防止 xss 攻击用这个处理，第二可以用于多语言转换</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let user &#x3D; &#123;</span><br><span class="line">    name:&#39;zhangsan&#39;,</span><br><span class="line">    info:&#39;hello world&#39;</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(abc&#96;I am $&#123;user.name&#125;,$&#123;user.info&#125;&#96;);</span><br><span class="line">  function abc(s,v1,v2)&#123;</span><br><span class="line">    console.log(s,v1,v2);</span><br><span class="line">    return s+v1+v2;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>新增方法(10种)<br>padStart()、padEnd() 这两个方法是 ES7 的草案中提案的，在 ES6 中使用，需要安装库<code>npm install babel-polyfill --save-dev</code>打补丁，处理兼容性，在项目中引入 babel-polyfill<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import &#39;babel-polyfill&#39;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  let str&#x3D;&quot;string&quot;;</span><br><span class="line">  &#x2F;&#x2F;includes()判断是否包含某个字符</span><br><span class="line">  console.log(&#39;includes&#39;,str.includes(&quot;c&quot;));</span><br><span class="line">  &#x2F;&#x2F;startsWith()判断是否以某个字符为起始</span><br><span class="line">  console.log(&#39;start&#39;,str.startsWith(&#39;str&#39;));</span><br><span class="line">  &#x2F;&#x2F;endsWith()判断是否以某个字符为结束</span><br><span class="line">  console.log(&#39;end&#39;,str.endsWith(&#39;ng&#39;));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  let str&#x3D;&quot;abc&quot;;</span><br><span class="line">  &#x2F;&#x2F;repeat()使字符串重复多少次</span><br><span class="line">  console.log(str.repeat(3));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;第一个参数指定要显示的长度，第二个参数表示如果长度不够要添加的字符</span><br><span class="line">  console.log(&#39;1&#39;.padStart(2,&#39;0&#39;)); &#x2F;&#x2F;01</span><br><span class="line">  console.log(&#39;1&#39;.padEnd(2,&#39;0&#39;)); &#x2F;&#x2F;10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="数值扩展"><a href="#数值扩展" class="headerlink" title="数值扩展"></a>数值扩展</h3><ul>
+<li>Number.isInteger()<blockquote>
+<p>判断是否为整数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;25&#39;,Number.isInteger(25)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;25.0&#39;,Number.isInteger(25.0)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;25.1&#39;,Number.isInteger(25.1)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;25.1&#39;,Number.isInteger(&#39;25&#39;)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.isFinite()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;15&#39;,Number.isFinite(15)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;NaN&#39;,Number.isFinite(NaN)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;1&#x2F;0&#39;,Number.isFinite(&#39;true&#39;&#x2F;0)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;NaN&#39;,Number.isNaN(NaN)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;0&#39;,Number.isNaN(0)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.isNaN()<blockquote>
+<p>判断一个值是否为NaN</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;NaN&#39;,Number.isNaN(NaN)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;0&#39;,Number.isNaN(0)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.MAX_SAFE_INTEGER<blockquote>
+<p>数的最大上限</p>
+</blockquote>
+</li>
+<li>Number.MIN_SAFE_INTEGER<blockquote>
+<p>数的最小下限</p>
+</blockquote>
+</li>
+<li>Number.isSafeInteger()<blockquote>
+<p>判断给的这个数是否在有效范围内<br>注意： ES6中如果一个数不在-2的53方和2的53次方之间就会不准确</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(Number.MAX_SAFE_INTEGER,Number.MIN_SAFE_INTEGER);</span><br><span class="line">  console.log(&#39;10&#39;,Number.isSafeInteger(10));&#x2F;&#x2F;10 true</span><br><span class="line">  console.log(&#39;a&#39;,Number.isSafeInteger(&#39;a&#39;));&#x2F;&#x2F;a false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Math.trunc()<blockquote>
+<p>取整</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">console.log(4.1,Math.trunc(4.1)); &#x2F;&#x2F; 4</span><br><span class="line">console.log(4.9,Math.trunc(4.9)); &#x2F;&#x2F; 4</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Math.sign()<blockquote>
+<p>返回-1,0,1 小于0返回-1，等于0返回0，大于0返回1,注意参数为数值</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;-5&#39;,Math.sign(-5)); &#x2F;&#x2F;-1</span><br><span class="line">console.log(&#39;0&#39;,Math.sign(0)); &#x2F;&#x2F;0</span><br><span class="line">console.log(&#39;5&#39;,Math.sign(5)); &#x2F;&#x2F;1</span><br></pre></td></tr></table></figure></li>
+<li>Math.cbrt()<blockquote>
+<p>返回一个数的立方根</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">console.log(&#39;-1&#39;,Math.cbrt(-1)); &#x2F;&#x2F;-1</span><br><span class="line">console.log(&#39;8&#39;,Math.cbrt(8)); &#x2F;&#x2F;2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="数组扩展"><a href="#数组扩展" class="headerlink" title="数组扩展"></a>数组扩展</h3><ul>
+<li>Array.of()<blockquote>
+<p>把一组<code>数组变量</code>转换成数组类型</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let arr &#x3D; Array.of(3,4,7,9,11);</span><br><span class="line">  console.log(&#39;arr&#x3D;&#39;,arr); &#x2F;&#x2F;arr&#x3D; [3, 4, 7, 9, 11]</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;返回空数组</span><br><span class="line">  let empty&#x3D;Array.of();</span><br><span class="line">  console.log(&#39;empty&#39;,empty); &#x2F;&#x2F;empty []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Array.from()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&#x2F;&#x2F;第一种用法，传入一个参数</span><br><span class="line">&lt;div id&#x3D;&quot;doc3&quot; class&#x3D;&quot;syy&quot;&gt;</span><br><span class="line">    &lt;p&gt;p1&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;p2&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;p3&lt;&#x2F;p&gt;</span><br><span class="line">&lt;&#x2F;div&gt;</span><br><span class="line">&#x2F;&#x2F;获取所有的p标签</span><br><span class="line">let p&#x3D;document.querySelectorAll(&#39;p&#39;);</span><br><span class="line">let pArr&#x3D;Array.from(p);</span><br><span class="line">pArr.forEach(function(item)&#123;</span><br><span class="line">  &#x2F;&#x2F;textContent是ES5的一个原生方法，获取文本</span><br><span class="line">  console.log(item.textContent);</span><br><span class="line">&#125;);</span><br><span class="line">&#x2F;&#x2F;输出 p1 p2 p3</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;第二种用法传入两个参数,第二个参数类似于map映射</span><br><span class="line">console.log(Array.from([1,3,5],function(item)&#123;return item*2&#125;)); &#x2F;&#x2F;[2, 6, 10]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>fill()<blockquote>
+<p>填充,只写一个参数全部替换，三个参数情况下：第一个参数是替换内容，第二个参数是起始位置，第三个参数是结束位置</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;fill-7&#39;,[1,&#39;a&#39;,undefined].fill(7)); &#x2F;&#x2F;[7, 7, 7]</span><br><span class="line">  console.log(&#39;fill,pos&#39;,[&#39;a&#39;,&#39;b&#39;,&#39;c&#39;].fill(7,1,3));&#x2F;&#x2F;[&quot;a&quot;, 7, 7]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>keys()<blockquote>
+<p>获取索引</p>
+</blockquote>
+</li>
+<li>values()<blockquote>
+<p>获取值，是ES7中的一个提案，存在浏览器兼容性需要加载 import ‘babel-polyfill’;</p>
+</blockquote>
+</li>
+<li>entries()<blockquote>
+<p>既获取索引又获取值</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">for(let index of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].keys())&#123;</span><br><span class="line">  console.log(&#39;keys&#39;,index); &#x2F;&#x2F; 0 1 2</span><br><span class="line">&#125;</span><br><span class="line">for(let value of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].values())&#123;</span><br><span class="line">  console.log(&#39;values&#39;,value); &#x2F;&#x2F;1 c ks</span><br><span class="line">&#125;</span><br><span class="line">for(let [index,value] of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].entries())&#123;</span><br><span class="line">  console.log(&#39;values&#39;,index,value); &#x2F;&#x2F;0 1 1 c 2 ks</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>copyWithin(target,start,end)</li>
+</ul>
+<ul>
+<li>target(必须)：从该位置开始替换数据</li>
+<li>start(可选)：从该位置开始读取数据，默认为0</li>
+<li>end(可选)：到该位置前停止读取数据，默认等于数组长度<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log([1,2,3,4,5].copyWithin(0,3,4)); &#x2F;&#x2F;[4, 2, 3, 4, 5]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>find(fn)<blockquote>
+<p>查找符合条件的第一个元素,查找不到时返回undefined</p>
+</blockquote>
+</li>
+<li>findIndex(fn)<blockquote>
+<p>查找符合条件的第一个元素的下标值，查找不到时返回-1</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log([1,2,3,4,5,6].find(function(item)&#123;return item&gt;3&#125;)); &#x2F;&#x2F;4</span><br><span class="line">  console.log([1,2,3,4,5,6].findIndex(function(item)&#123;return item&gt;3&#125;)); &#x2F;&#x2F;3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>展开运算符…<blockquote>
+<p>数组拼接使用展开运算符可以取代concat的位置</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const a &#x3D; [&#39;a&#39;, &#39;b&#39;];</span><br><span class="line">const b &#x3D; [&#39;c&#39;, &#39;d&#39;]</span><br><span class="line">const c &#x3D; [...a, ...b];</span><br><span class="line"></span><br><span class="line">console.log(c); &#x2F;&#x2F;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;使用concat</span><br><span class="line">const d &#x3D; a.concat(b)</span><br><span class="line">console.log(d); &#x2F;&#x2F;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="函数扩展"><a href="#函数扩展" class="headerlink" title="函数扩展"></a>函数扩展</h3><ul>
+<li>参数默认值<blockquote>
+<p>注意： 默认值后面不能跟没有默认值得变量，如(x, y = ‘world’,c)c没有默认值错误</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  function test(x, y &#x3D; &#39;world&#39;)&#123;</span><br><span class="line">    console.log(&#39;默认值&#39;,x,y);</span><br><span class="line">  &#125;</span><br><span class="line">  test(&#39;hello&#39;); &#x2F;&#x2F;默认值 hello world</span><br><span class="line">  test(&#39;hello&#39;,&#39;China&#39;); &#x2F;&#x2F;默认值 hello China</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>作用域问题<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">let x&#x3D;&#39;test&#39;;</span><br><span class="line">function test2(x,y&#x3D;x)&#123;</span><br><span class="line">  console.log(&#39;作用域&#39;,x,y);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;参数中第一个x没有值</span><br><span class="line">test2(); &#x2F;&#x2F;作用域 undefined undefined</span><br><span class="line">test2(&#39;kill&#39;); &#x2F;&#x2F;作用域 kill kill</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;x为上面let定义的x</span><br><span class="line">function test3(z,y&#x3D;x)&#123;</span><br><span class="line">  console.log(&#39;作用域&#39;,z,y);</span><br><span class="line">&#125;</span><br><span class="line">test3(&#39;kill&#39;); &#x2F;&#x2F;作用域 kill test</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>rest参数<blockquote>
+<p>rest参数就是在你不确定有多少个参数的时候，把你输入的一系列参数转换成了数组</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">function test3(...arg)&#123;</span><br><span class="line">  for(let v of arg)&#123;</span><br><span class="line">    console.log(v);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">test3(1,2,3,4,&#39;a&#39;); &#x2F;&#x2F; 1 3 4 5 a</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>扩展运算符<blockquote>
+<p>ES6的扩展运算符则可以看作是rest参数的逆运算。可以将数组转化为参数列表</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&#x2F;&#x2F; 把一个数组拆分成离散的值</span><br><span class="line">console.log(...[1,2,4]); &#x2F;&#x2F;1 2 4</span><br><span class="line">console.log(&#39;a&#39;,...[1,2,4]); &#x2F;&#x2F;a 1 2 4</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>箭头函数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">let arrow &#x3D; v &#x3D;&gt; v*2;</span><br><span class="line">let arrow2 &#x3D; () &#x3D;&gt; 5;</span><br><span class="line">console.log(&#39;arrow&#39;,arrow(3)); &#x2F;&#x2F;6</span><br><span class="line">console.log(arrow2()); &#x2F;&#x2F;5</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>尾调用<blockquote>
+<p>尾调用存在于函数式编程概念里，函数的最后是不是是一个函数，可以用来提升性能，如果在性能优化过程中，是不断的嵌套其他函数，或者说这个函数依赖于另一个函数的操作，建议用尾调用的形式。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  function tail(x)&#123;</span><br><span class="line">    console.log(&#39;tail&#39;,x);</span><br><span class="line">  &#125;</span><br><span class="line">  function fx(x)&#123;</span><br><span class="line">    return tail(x)</span><br><span class="line">  &#125;</span><br><span class="line">  fx(123) &#x2F;&#x2F;tail 123</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="对象扩展"><a href="#对象扩展" class="headerlink" title="对象扩展"></a>对象扩展</h3><ul>
+<li>简洁表示法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let o&#x3D;1;</span><br><span class="line">  let k&#x3D;2;</span><br><span class="line">  &#x2F;&#x2F;es5属性定义</span><br><span class="line">  let es5&#x3D;&#123;</span><br><span class="line">    o:o,</span><br><span class="line">    k:k</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6属性定义</span><br><span class="line">  let es6&#x3D;&#123;</span><br><span class="line">    o,</span><br><span class="line">    k</span><br><span class="line">  &#125;;</span><br><span class="line">  console.log(es5,es6);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;es5定义方法</span><br><span class="line">  let es5_method&#x3D;&#123;</span><br><span class="line">    hello:function()&#123;</span><br><span class="line">      console.log(&#39;hello&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6定义方法，更简洁</span><br><span class="line">  let es6_method&#x3D;&#123;</span><br><span class="line">    hello()&#123;</span><br><span class="line">      console.log(&#39;hello&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  console.log(es5_method.hello(),es6_method.hello());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>属性表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F; 属性表达式</span><br><span class="line">  let a&#x3D;&#39;b&#39;;</span><br><span class="line">  &#x2F;&#x2F;es5中key是固定的</span><br><span class="line">  let es5_obj&#x3D;&#123;</span><br><span class="line">    a:&#39;c&#39;,</span><br><span class="line">    b:&#39;c&#39;</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6中可以使用变量，这块相当于b</span><br><span class="line">  let es6_obj&#x3D;&#123;</span><br><span class="line">    [a]:&#39;c&#39;</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(es5_obj,es6_obj);</span><br><span class="line">  &#x2F;&#x2F;输出 Object &#123;a: &quot;c&quot;, b: &quot;c&quot;&#125; Object &#123;b: &quot;c&quot;&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.is()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;字符串&#39;,Object.is(&#39;abc&#39;,&#39;abc&#39;),&#39;abc&#39;&#x3D;&#x3D;&#x3D;&#39;abc&#39;); &#x2F;&#x2F;字符串 true true</span><br><span class="line">  &#x2F;&#x2F; 数组是引用类型，虽然以下是两个空数组，在值上都是空，但这两个数组引用的是不同的地址，因此在严格意义上来讲，他两个不是完全相等的</span><br><span class="line">  console.log(&#39;数组&#39;,Object.is([],[]),[]&#x3D;&#x3D;&#x3D;[]); &#x2F;&#x2F;数组 false false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.assign()<blockquote>
+<p>拷贝函数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;拷贝&#39;,Object.assign(&#123;a:&#39;a&#39;&#125;,&#123;b:&#39;b&#39;&#125;));</span><br><span class="line">&#x2F;&#x2F;拷贝 Object &#123;a: &quot;a&quot;, b: &quot;b&quot;&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.entries()<blockquote>
+<p>遍历</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let test&#x3D;&#123;k:123,o:456&#125;;</span><br><span class="line">for(let [key,value] of Object.entries(test))&#123;</span><br><span class="line">console.log([key,value]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.keys()<blockquote>
+<p>对数组排序</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var anObj &#x3D; &#123; 100: &#39;a&#39;, 2: &#39;b&#39;, 7: &#39;c&#39; &#125;;</span><br><span class="line">console.log(Object.keys(anObj).sort( (x,y) &#x3D;&gt; x &gt; y));</span><br></pre></td></tr></table></figure></li>
+<li>对象扩展拷贝<blockquote>
+<p>node v8.5.0版本支持</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const a &#x3D; &#123;&quot;name&quot;: &quot;zhangsan&quot;&#125;</span><br><span class="line">const b &#x3D; &#123;&quot;age&quot;: 8, &quot;email&quot;: &quot;XXX@qq.com&quot;&#125;</span><br><span class="line">console.log(&#123;...a, ...b, &quot;type&quot;: &quot;儿童&quot;&#125;);</span><br><span class="line">&#x2F;&#x2F; &#123;name: &quot;zhangsan&quot;, age: 18, email: &quot;XXX@qq.com&quot;, type: &quot;成人&quot;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/JavaScript_Promise/" rel="prev" title="Promise">
+      <i class="fa fa-chevron-left"></i> Promise
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/" rel="next" title="算法队列">
+      算法队列 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%89%A9%E5%B1%95"><span class="nav-number">1.</span> <span class="nav-text">正则表达式扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%89%A9%E5%B1%95"><span class="nav-number">2.</span> <span class="nav-text">字符串扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%80%BC%E6%89%A9%E5%B1%95"><span class="nav-number">3.</span> <span class="nav-text">数值扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E6%89%A9%E5%B1%95"><span class="nav-number">4.</span> <span class="nav-text">数组扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E6%89%A9%E5%B1%95"><span class="nav-number">5.</span> <span class="nav-text">函数扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E6%89%A9%E5%B1%95"><span class="nav-number">6.</span> <span class="nav-text">对象扩展</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

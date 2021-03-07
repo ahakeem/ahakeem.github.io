@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据结构Set、Map 在整个的数据开发过程中，涉及到数据结构，能用Map就不使用数组，尤其是复杂的数据结构。如果对要求存储的数据有唯一性要求，推荐使用Set。  set 类似于数组，但它的一大特性就是集合中的所有元素都是唯一，没有重复。   方法介绍   add：添加一个元素 delete：删除一个元素 clear：清空所有元素 has：查看集合中是否包含指定元素 size：相当于数组中的len">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构Set、Map">
+<meta property="og:url" content="http://example.com/2021/03/06/nodejs/JavaScript%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="数据结构Set、Map 在整个的数据开发过程中，涉及到数据结构，能用Map就不使用数组，尤其是复杂的数据结构。如果对要求存储的数据有唯一性要求，推荐使用Set。  set 类似于数组，但它的一大特性就是集合中的所有元素都是唯一，没有重复。   方法介绍   add：添加一个元素 delete：删除一个元素 clear：清空所有元素 has：查看集合中是否包含指定元素 size：相当于数组中的len">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-03-06T15:54:30.000Z">
+<meta property="article:modified_time" content="2021-03-06T16:05:58.960Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/03/06/nodejs/JavaScript%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>数据结构Set、Map | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/06/nodejs/JavaScript%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构Set、Map
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-06 23:54:30" itemprop="dateCreated datePublished" datetime="2021-03-06T23:54:30+08:00">2021-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-07 00:05:58" itemprop="dateModified" datetime="2021-03-07T00:05:58+08:00">2021-03-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="数据结构Set、Map"><a href="#数据结构Set、Map" class="headerlink" title="数据结构Set、Map"></a>数据结构Set、Map</h3><blockquote>
+<p>在整个的数据开发过程中，涉及到数据结构，能用Map就不使用数组，尤其是复杂的数据结构。如果对要求存储的数据有唯一性要求，推荐使用Set。</p>
+</blockquote>
+<h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><blockquote>
+<p>类似于数组，但它的一大特性就是集合中的所有元素都是唯一，没有重复。</p>
+</blockquote>
+<ul>
+<li>方法介绍</li>
+</ul>
+<ul>
+<li>add：添加一个元素</li>
+<li>delete：删除一个元素</li>
+<li>clear：清空所有元素</li>
+<li>has：查看集合中是否包含指定元素</li>
+<li>size：相当于数组中的length<h3 id="weakset"><a href="#weakset" class="headerlink" title="weakset"></a>weakset</h3><blockquote>
+<p>weakset的元素只能是对象，WeakSet中的对象是弱引用，只是把地址拿过来，没有clear属性，不能遍历</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let weakList&#x3D;new WeakSet();</span><br><span class="line">  let arg&#x3D;&#123;a:&#39;1&#39;&#125;;</span><br><span class="line">  weakList.add(arg);</span><br><span class="line">  weakList.add(&#123;b:&#39;2&#39;&#125;);</span><br><span class="line">  console.log(&#39;weakList&#39;,weakList);</span><br><span class="line">  &#x2F;&#x2F;weakList WeakSet &#123;Object &#123;b: &quot;2&quot;&#125;, Object &#123;a: &quot;1&quot;&#125;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="map"><a href="#map" class="headerlink" title="map"></a>map</h3><blockquote>
+<p>Map中的key可以是任意数据类型：字符串、数组、对象等 要注意集合Set添加元素用add()，而集合Map添加元素用set()</p>
+</blockquote>
+<h3 id="weakmap"><a href="#weakmap" class="headerlink" title="weakmap"></a>weakmap</h3><blockquote>
+<p>同WeakSet一样接收的key值必须是对象，没有size属性，clear方法，也是不能遍历</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let weakmap&#x3D;new WeakMap();</span><br><span class="line">  let o&#x3D;&#123;&#125;;</span><br><span class="line">  weakmap.set(o,123);</span><br><span class="line">  console.log(weakmap.get(o)); &#x2F;&#x2F;123</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="map与array对比"><a href="#map与array对比" class="headerlink" title="map与array对比"></a>map与array对比</h3><blockquote>
+<p>Map与Array横向对比增、查、改、删</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let map&#x3D;new Map();</span><br><span class="line">let array&#x3D;[];</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>增<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">map.set(&#39;t&#39;,1);</span><br><span class="line">array.push(&#123;t:1&#125;);</span><br><span class="line"></span><br><span class="line">console.info(&#39;map-array&#39;,map,array); &#x2F;&#x2F; map-array Map &#123;&quot;t&quot; &#x3D;&gt; 1&#125; [Object]</span><br></pre></td></tr></table></figure></li>
+<li>查<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let map_exist&#x3D;map.has(&#39;t&#39;);</span><br><span class="line">let array_exist&#x3D;array.find(item&#x3D;&gt;item.a);</span><br><span class="line"></span><br><span class="line">console.info(&#39;map-array&#39;,map_exist,!!array_exist); &#x2F;&#x2F; map-array true false</span><br></pre></td></tr></table></figure></li>
+<li>改<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">map.set(&#39;t&#39;,2);</span><br><span class="line">array.forEach(item&#x3D;&gt;item.t?item.t&#x3D;2:&#39;&#39;);</span><br><span class="line"></span><br><span class="line">console.info(&#39;map-array-modify&#39;,map,array); &#x2F;&#x2F; map-array-modify Map &#123;&quot;t&quot; &#x3D;&gt; 2&#125; [Object]</span><br></pre></td></tr></table></figure></li>
+<li>删<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">map.delete(&#39;t&#39;);</span><br><span class="line">let index&#x3D;array.findIndex(item&#x3D;&gt;item.t);</span><br><span class="line">array.splice(index,1);</span><br><span class="line"></span><br><span class="line">console.info(&#39;map-array-empty&#39;,map,array); &#x2F;&#x2F; map-array-empty Map &#123;&#125; []</span><br></pre></td></tr></table></figure>
+<h3 id="set与array"><a href="#set与array" class="headerlink" title="set与array"></a>set与array</h3><blockquote>
+<p>Set与Array增、查、改、删对比</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let set&#x3D;new Set();</span><br><span class="line">let array&#x3D;[];</span><br></pre></td></tr></table></figure></li>
+<li>增<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">set.add(&#123;t:1&#125;);</span><br><span class="line">array.push(&#123;t:1&#125;);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; set-array Set &#123;Object &#123;t: 1&#125;&#125; [Object]</span><br><span class="line">console.info(&#39;set-array&#39;,set,array);</span><br></pre></td></tr></table></figure></li>
+<li>查<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let set_exist&#x3D;set.has(&#123;t:1&#125;); &#x2F;&#x2F; 没有对象引用，将一直为false</span><br><span class="line">let array_exist&#x3D;array.find(item&#x3D;&gt;item.t);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; set-array false Object &#123;t: 1&#125;</span><br><span class="line">console.info(&#39;set-array&#39;,set_exist,array_exist);</span><br></pre></td></tr></table></figure></li>
+<li>改<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">set.forEach(item&#x3D;&gt;item.t?item.t&#x3D;2:&#39;&#39;);</span><br><span class="line">array.forEach(item&#x3D;&gt;item.t?item.t&#x3D;2:&#39;&#39;);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; set-array-modify Set &#123;Object &#123;t: 2&#125;&#125; [Object]</span><br><span class="line">console.info(&#39;set-array-modify&#39;,set,array);</span><br></pre></td></tr></table></figure></li>
+<li>删<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">set.forEach(item&#x3D;&gt;item.t?set.delete(item):&#39;&#39;);</span><br><span class="line">let index&#x3D;array.findIndex(item&#x3D;&gt;item.t);</span><br><span class="line">array.splice(index,1);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; set-array-empty Set &#123;&#125; []</span><br><span class="line">console.info(&#39;set-array-empty&#39;,set,array);</span><br></pre></td></tr></table></figure>
+<h3 id="集合map集合set对象三者对比"><a href="#集合map集合set对象三者对比" class="headerlink" title="集合map集合set对象三者对比"></a>集合map集合set对象三者对比</h3><blockquote>
+<p>Map、Set、Object三者增、查、改、删对比</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let item&#x3D;&#123;t:1&#125;;</span><br><span class="line">let map&#x3D;new Map();</span><br><span class="line">let set&#x3D;new Set();</span><br><span class="line">let obj&#x3D;&#123;&#125;;</span><br></pre></td></tr></table></figure></li>
+<li>增<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map.set(&#39;t&#39;,1);</span><br><span class="line">set.add(item);</span><br><span class="line">obj[&#39;t&#39;]&#x3D;1;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; map-set-obj Object &#123;t: 1&#125; Map &#123;&quot;t&quot; &#x3D;&gt; 1&#125; Set &#123;Object &#123;t: 1&#125;&#125;</span><br><span class="line">console.info(&#39;map-set-obj&#39;,obj,map,set);</span><br></pre></td></tr></table></figure></li>
+<li>查<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Object &#123;map_exist: true, set_exist: true, obj_exist: true&#125;</span><br><span class="line">console.info(&#123;</span><br><span class="line">    map_exist:map.has(&#39;t&#39;),</span><br><span class="line">    set_exist:set.has(item),</span><br><span class="line">    obj_exist:&#39;t&#39; in obj</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></li>
+<li>改<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map.set(&#39;t&#39;,2);</span><br><span class="line">item.t&#x3D;2;</span><br><span class="line">obj[&#39;t&#39;]&#x3D;2;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; map-set-obj-modify Object &#123;t: 2&#125; Map &#123;&quot;t&quot; &#x3D;&gt; 2&#125; Set &#123;Object &#123;t: 2&#125;&#125;</span><br><span class="line">console.info(&#39;map-set-obj-modify&#39;,obj,map,set);</span><br></pre></td></tr></table></figure></li>
+<li>删<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">map.delete(&#39;t&#39;);</span><br><span class="line">set.delete(item);</span><br><span class="line">delete obj[&#39;t&#39;];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; map-set-obj-empty Object &#123;&#125; Map &#123;&#125; Set &#123;&#125;</span><br><span class="line">console.info(&#39;map-set-obj-empty&#39;,obj,map,set);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/06/nodejs/JavaScript_%E6%B5%AE%E7%82%B9%E6%95%B0%E4%B9%8B%E8%BF%B7(2)/" rel="prev" title="JavaScript 浮点数之迷 大数运算">
+      <i class="fa fa-chevron-left"></i> JavaScript 浮点数之迷 大数运算
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/JavaScript_Promise/" rel="next" title="Promise">
+      Promise <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84Set%E3%80%81Map"><span class="nav-number">1.</span> <span class="nav-text">数据结构Set、Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set"><span class="nav-number">2.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weakset"><span class="nav-number">3.</span> <span class="nav-text">weakset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map"><span class="nav-number">4.</span> <span class="nav-text">map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weakmap"><span class="nav-number">5.</span> <span class="nav-text">weakmap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map%E4%B8%8Earray%E5%AF%B9%E6%AF%94"><span class="nav-number">6.</span> <span class="nav-text">map与array对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set%E4%B8%8Earray"><span class="nav-number">7.</span> <span class="nav-text">set与array</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E5%90%88map%E9%9B%86%E5%90%88set%E5%AF%B9%E8%B1%A1%E4%B8%89%E8%80%85%E5%AF%B9%E6%AF%94"><span class="nav-number">8.</span> <span class="nav-text">集合map集合set对象三者对比</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

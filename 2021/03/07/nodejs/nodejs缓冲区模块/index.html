@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="面试指南  缓冲（Buffer）与缓存（Cache）的区别？  Buffer初识在引入 TypedArray 之前，JavaScript 语言没有用于读取或操作二进制数据流的机制。 Buffer 类是作为 Node.js API 的一部分引入的，用于在 TCP 流、文件系统操作、以及其他上下文中与八位字节流进行交互。这是来自 Node.js 官网的一段描述，比较晦涩难懂，总结起来一句话 Node.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs缓冲区模块">
+<meta property="og:url" content="http://example.com/2021/03/07/nodejs/nodejs%E7%BC%93%E5%86%B2%E5%8C%BA%E6%A8%A1%E5%9D%97/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="面试指南  缓冲（Buffer）与缓存（Cache）的区别？  Buffer初识在引入 TypedArray 之前，JavaScript 语言没有用于读取或操作二进制数据流的机制。 Buffer 类是作为 Node.js API 的一部分引入的，用于在 TCP 流、文件系统操作、以及其他上下文中与八位字节流进行交互。这是来自 Node.js 官网的一段描述，比较晦涩难懂，总结起来一句话 Node.">
+<meta property="og:locale">
+<meta property="og:image" content="http://example.com/images/nodejs/fountain_stream.jpg">
+<meta property="og:image" content="http://example.com/images/nodejs/bus-stop-1516549_1280.jpg">
+<meta property="og:image" content="http://example.com/images/nodejs/slab_poolOffset_0.png">
+<meta property="og:image" content="http://example.com/images/nodejs/slab_poolOffset_2048.png">
+<meta property="og:image" content="http://example.com/images/nodejs/ab_string.png">
+<meta property="og:image" content="http://example.com/images/nodejs/ab_buffer.png">
+<meta property="article:published_time" content="2021-03-07T13:49:48.000Z">
+<meta property="article:modified_time" content="2021-03-07T15:09:45.788Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="nodejs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/nodejs/fountain_stream.jpg">
+
+<link rel="canonical" href="http://example.com/2021/03/07/nodejs/nodejs%E7%BC%93%E5%86%B2%E5%8C%BA%E6%A8%A1%E5%9D%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>nodejs缓冲区模块 | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/nodejs%E7%BC%93%E5%86%B2%E5%8C%BA%E6%A8%A1%E5%9D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nodejs缓冲区模块
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 21:49:48 / Modified: 23:09:45" itemprop="dateCreated datePublished" datetime="2021-03-07T21:49:48+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>面试指南</p>
+<blockquote>
+<p>缓冲（Buffer）与缓存（Cache）的区别？</p>
+</blockquote>
+<h2 id="Buffer初识"><a href="#Buffer初识" class="headerlink" title="Buffer初识"></a>Buffer初识</h2><p>在引入 TypedArray 之前，JavaScript 语言没有用于读取或操作二进制数据流的机制。 Buffer 类是作为 Node.js API 的一部分引入的，用于在 TCP 流、文件系统操作、以及其他上下文中与八位字节流进行交互。这是来自 Node.js 官网的一段描述，比较晦涩难懂，<code>总结起来一句话 Node.js 可以用来处理二进制流数据或者与之进行交互</code>。</p>
+<p>Buffer 用于读取或操作二进制数据流，做为 Node.js API 的一部分使用时无需 require，用于操作网络协议、数据库、图片和文件 I/O 等一些需要大量二进制数据的场景。Buffer 在创建时大小已经被确定且是无法调整的，在内存分配这块 Buffer 是由 C++ 层面提供而不是 V8 具体后面会讲解。</p>
+<p>在这里不知道你是否认为这是很简单的？但是上面提到的一些关键词<code>二进制、流（Stream）、缓冲区（Buffer）</code>，这些又都是什么呢？下面尝试做一些简单的介绍。</p>
+<h2 id="什么是二进制数据？"><a href="#什么是二进制数据？" class="headerlink" title="什么是二进制数据？"></a>什么是二进制数据？</h2><p>谈到二进制我们大脑可能会浮想到就是 010101 这种代码命令<br>二进制数据使用 0 和 1 两个数码来表示的数据，为了存储或展示一些数据，计算机需要先将这些数据转换为二进制来表示。例如，我想存储 66 这个数字，计算机会先将数字 66 转化为二进制 01000010 表示，印象中第一次接触这个是在大学期间 C 语言课程中，转换公式如下所示：</p>
+<table>
+<thead>
+<tr>
+<th>128</th>
+<th>64</th>
+<th>32</th>
+<th>16</th>
+<th>8</th>
+<th>4</th>
+<th>2</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>上面用数字举了一个示例，我们知道数字只是数据类型之一，其它的还有字符串、图像、文件等。例如我们对一个英文 M 操作，在 JavaScript 里通过 <code>&#39;M&#39;.charCodeAt()</code> 取到对应的 ASCII 码之后（通过以上的步骤）会转为二进制表示。</p>
+<h2 id="什么是-Stream？"><a href="#什么是-Stream？" class="headerlink" title="什么是 Stream？"></a>什么是 Stream？</h2><p>流，英文 Stream 是对输入输出设备的抽象，这里的设备可以是文件、网络、内存等。<br>流是有方向性的，当程序从某个数据源读入数据，会开启一个输入流，这里的数据源可以是文件或者网络等，例如我们从 a.txt 文件读入数据。相反的当我们的程序需要写出数据到指定数据源（文件、网络等）时，则开启一个输出流。当有一些大文件操作时，我们就需要 Stream 像管道一样，一点一点的将数据流出。<br><img src="/images/nodejs/fountain_stream.jpg" alt="fountain_stream.jpg"><br>通过上面的讲解进一步的理解了 Stream 是什么？那么 Stream 和 Buffer 之间又是什么关系呢？看以下介绍，关于 Stream 本身也有很多知识点</p>
+<h2 id="什么是-Buffer？"><a href="#什么是-Buffer？" class="headerlink" title="什么是 Buffer？"></a>什么是 Buffer？</h2><p>通过以上 Stream 的讲解，我们已经看到数据是从一端流向另一端，那么他们是如何流动的呢？</p>
+<p>通常，数据的移动是为了处理或者读取它，并根据它进行决策。伴随着时间的推移，每一个过程都会有一个最小或最大数据量。如果数据到达的速度比进程消耗的速度快，那么少数早到达的数据会处于等待区等候被处理。反之，如果数据到达的速度比进程消耗的数据慢，那么早先到达的数据需要等待一定量的数据到达之后才能被处理。</p>
+<p>这里的等待区就指的缓冲区（Buffer），它是计算机中的一个小物理单位，通常位于计算机的 RAM 中。这些概念可能会很难理解，不要担心下面通过一个例子进一步说明。</p>
+<h3 id="公共汽车站乘车例子"><a href="#公共汽车站乘车例子" class="headerlink" title="公共汽车站乘车例子"></a>公共汽车站乘车例子</h3><p>举一个公共汽车站乘车的例子，通常公共汽车会每隔几十分钟一趟，在这个时间到达之前就算乘客已经满了，车辆也不会提前发车，早到的乘客就需要先在车站进行等待。假设到达的乘客过多，后到的一部分则需要在公共汽车站等待下一趟车驶来。<br><img src="/images/nodejs/bus-stop-1516549_1280.jpg" alt="bus-stop-1516549_1280.jpg"><br>在上面例子中的等待区公共汽车站，对应到我们的 Node.js 中也就是缓冲区（Buffer），另外乘客到达的速度是我们不能控制的，我们能控制的也只有何时发车，对应到我们的程序中就是我们无法控制数据流到达的时间，可以做的是能决定何时发送数据。</p>
+<h2 id="Buffer基本使用"><a href="#Buffer基本使用" class="headerlink" title="Buffer基本使用"></a>Buffer基本使用</h2><p>了解了 Buffer 的一些概念之后，我们来看下 Buffer 的一些基本使用，这里并不会列举所有的 API 使用，仅列举一部分常用的，更详细的可参考 Node.js 中文网。</p>
+<h3 id="创建Buffer"><a href="#创建Buffer" class="headerlink" title="创建Buffer"></a>创建Buffer</h3><p>在 6.0.0 之前的 Node.js 版本中， Buffer 实例是使用 Buffer 构造函数创建的，该函数根据提供的参数以不同方式分配返回的 Buffer <code>new Buffer()</code>。<br>现在可以通过 Buffer.from()、Buffer.alloc() 与 Buffer.allocUnsafe() 三种方式来创建<br><strong>Buffer.from()</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const b1 &#x3D; Buffer.from(&#39;10&#39;);</span><br><span class="line">const b2 &#x3D; Buffer.from(&#39;10&#39;, &#39;utf8&#39;);</span><br><span class="line">const b3 &#x3D; Buffer.from([10]);</span><br><span class="line">const b4 &#x3D; Buffer.from(b3);</span><br><span class="line"></span><br><span class="line">console.log(b1, b2, b3, b4); &#x2F;&#x2F; &lt;Buffer 31 30&gt; &lt;Buffer 31 30&gt; &lt;Buffer 0a&gt; &lt;Buffer 0a&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>Buffer.alloc</strong><br>返回一个已初始化的 Buffer，可以保证新创建的 Buffer 永远不会包含旧数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const bAlloc1 &#x3D; Buffer.alloc(10); &#x2F;&#x2F; 创建一个大小为 10 个字节的缓冲区</span><br><span class="line"></span><br><span class="line">console.log(bAlloc1); &#x2F;&#x2F; &lt;Buffer 00 00 00 00 00 00 00 00 00 00&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>Buffer.allocUnsafe</strong><br>创建一个大小为 size 字节的新的未初始化的 Buffer，由于 Buffer 是未初始化的，因此分配的内存片段可能包含敏感的旧数据。在 Buffer 内容可读情况下，则可能会泄露它的旧数据，这个是不安全的，使用时要谨慎。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const bAllocUnsafe1 &#x3D; Buffer.allocUnsafe(10);</span><br><span class="line"></span><br><span class="line">console.log(bAllocUnsafe1); &#x2F;&#x2F; &lt;Buffer 49 ae c9 cd 49 1d 00 00 11 4f&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>Buffer 字符编码</strong><br>通过使用字符编码，可实现 Buffer 实例与 JavaScript 字符串之间的相互转换，目前所支持的字符编码如下所示：</p>
+<ul>
+<li>‘ascii’ - 仅适用于 7 位 ASCII 数据。此编码速度很快，如果设置则会剥离高位。</li>
+<li>‘utf8’ - 多字节编码的 Unicode 字符。许多网页和其他文档格式都使用 UTF-8。</li>
+<li>‘utf16le’ - 2 或 4 个字节，小端序编码的 Unicode 字符。支持代理对（U+10000 至 U+10FFFF）。</li>
+<li>‘ucs2’ - ‘utf16le’ 的别名。</li>
+<li>‘base64’ - Base64 编码。当从字符串创建 Buffer 时，此编码也会正确地接受 RFC 4648 第 5 节中指定的 “URL 和文件名安全字母”。</li>
+<li>‘latin1’ - 一种将 Buffer 编码成单字节编码字符串的方法（由 RFC 1345 中的 IANA 定义，第 63 页，作为 Latin-1 的补充块和 C0/C1 控制码）。</li>
+<li>‘binary’ - ‘latin1’ 的别名。</li>
+<li>‘hex’ - 将每个字节编码成两个十六进制的字符。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const buf &#x3D; Buffer.from(&#39;hello world&#39;, &#39;ascii&#39;);</span><br><span class="line">console.log(buf.toString(&#39;hex&#39;)); &#x2F;&#x2F; 68656c6c6f20776f726c64</span><br></pre></td></tr></table></figure>
+<h3 id="字符串与-Buffer-类型互转"><a href="#字符串与-Buffer-类型互转" class="headerlink" title="字符串与 Buffer 类型互转"></a>字符串与 Buffer 类型互转</h3></li>
+</ul>
+<p><strong>字符串转 Buffer</strong><br>这个相信不会陌生了，通过上面讲解的 Buffer.form() 实现，如果不传递 encoding 默认按照 UTF-8 格式转换存储</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const buf &#x3D; Buffer.from(&#39;Node.js 技术栈&#39;, &#39;UTF-8&#39;);</span><br><span class="line"></span><br><span class="line">console.log(buf); &#x2F;&#x2F; &lt;Buffer 4e 6f 64 65 2e 6a 73 20 e6 8a 80 e6 9c af e6 a0 88&gt;</span><br><span class="line">console.log(buf.length); &#x2F;&#x2F; 17</span><br></pre></td></tr></table></figure>
+<p><strong>Buffer 转换为字符串</strong><br>Buffer 转换为字符串也很简单，使用 toString([encoding], [start], [end]) 方法，默认编码仍为 UTF-8，如果不传 start、end 可实现全部转换，传了 start、end 可实现部分转换（这里要小心了）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const buf &#x3D; Buffer.from(&#39;Node.js 技术栈&#39;, &#39;UTF-8&#39;);</span><br><span class="line"></span><br><span class="line">console.log(buf); &#x2F;&#x2F; &lt;Buffer 4e 6f 64 65 2e 6a 73 20 e6 8a 80 e6 9c af e6 a0 88&gt;</span><br><span class="line">console.log(buf.length); &#x2F;&#x2F; 17</span><br><span class="line">console.log(buf.toString(&#39;UTF-8&#39;, 0, 9)); &#x2F;&#x2F; Node.js �</span><br></pre></td></tr></table></figure>
+<p>运行查看，可以看到以上输出结果为 Node.js � 出现了乱码，为什么？</p>
+<h3 id="转换过程中为什么出现乱码？"><a href="#转换过程中为什么出现乱码？" class="headerlink" title="转换过程中为什么出现乱码？"></a>转换过程中为什么出现乱码？</h3><p>首先以上示例中使用的默认编码方式 UTF-8，问题就出在这里一个中文在 UTF-8 下占用 3 个字节，技 这个字在 buf 中对应的字节为 8a 80 e6 而我们的设定的范围为 0～9 因此只输出了 8a，这个时候就会造成字符被截断出现乱码。<br>下面我们改下示例的截取范围：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const buf &#x3D; Buffer.from(&#39;Node.js 技术栈&#39;, &#39;UTF-8&#39;);</span><br><span class="line"></span><br><span class="line">console.log(buf); &#x2F;&#x2F; &lt;Buffer 4e 6f 64 65 2e 6a 73 20 e6 8a 80 e6 9c af e6 a0 88&gt;</span><br><span class="line">console.log(buf.length); &#x2F;&#x2F; 17</span><br><span class="line">console.log(buf.toString(&#39;UTF-8&#39;, 0, 11)); &#x2F;&#x2F; Node.js 技</span><br></pre></td></tr></table></figure>
+
+<h2 id="Buffer内存机制"><a href="#Buffer内存机制" class="headerlink" title="Buffer内存机制"></a>Buffer内存机制</h2><p>由于 Buffer 需要处理的是大量的二进制数据，假如用一点就向系统去申请，则会造成频繁的向系统申请内存调用，所以 Buffer 所占用的内存不再由 <code>V8 分配</code>，而是在 Node.js 的 C++ 层面完成申请，在 JavaScript 中进行内存分配。因此，这部分内存我们称之为<code>堆外内存</code>。<br><strong>注意：</strong>以下使用到的buffer.js源码为 Node.js v10.x 版本，地址：<a target="_blank" rel="noopener" href="https://github.com/nodejs/node/blob/v10.x/lib/buffer.js">https://github.com/nodejs/node/blob/v10.x/lib/buffer.js</a></p>
+<h3 id="Buffer内存分配原理"><a href="#Buffer内存分配原理" class="headerlink" title="Buffer内存分配原理"></a>Buffer内存分配原理</h3><p>Node.js 采用了 slab 机制进行<code>预先申请、事后分配</code>，是一种动态的管理机制。<br>使用 Buffer.alloc(size) 传入一个指定的 size 就会申请一块固定大小的内存区域，slab 具有如下三种状态：</p>
+<ul>
+<li>full：完全分配状态</li>
+<li>partial：部分分配状态</li>
+<li>empty：没有被分配状态</li>
+</ul>
+<p><strong>8KB 限制</strong><br>Node.js 以 8KB 为界限来区分是小对象还是大对象，在 buffer.js 中可以看到以下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Buffer.poolSize &#x3D; 8 * 1024; &#x2F;&#x2F; 102 行，Node.js 版本为 v10.x</span><br></pre></td></tr></table></figure>
+<p>在Buffer初识一节里有提到过 Buffer<code>在创建时大小已经被确定且是无法调整的</code>到这里应该就明白了。<br><strong>Buffer 对象分配</strong><br>以下代码示例，在加载时直接调用了 createPool() 相当于直接初始化了一个 8 KB 的内存空间，这样在第一次进行内存分配时也会变得更高效。另外在初始化的同时还初始化了一个新的变量<strong>poolOffset = 0</strong>这个变量会记录已经使用了多少字节。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Buffer.poolSize &#x3D; 8 * 1024;</span><br><span class="line">var poolSize, poolOffset, allocPool;</span><br><span class="line"></span><br><span class="line">... &#x2F;&#x2F; 中间代码省略</span><br><span class="line"></span><br><span class="line">function createPool() &#123;</span><br><span class="line">  poolSize &#x3D; Buffer.poolSize;</span><br><span class="line">  allocPool &#x3D; createUnsafeArrayBuffer(poolSize);</span><br><span class="line">  poolOffset &#x3D; 0;</span><br><span class="line">&#125;</span><br><span class="line">createPool(); &#x2F;&#x2F; 129 行</span><br></pre></td></tr></table></figure>
+<p>此时，新构造的 slab 如下所示：<br><img src="/images/nodejs/slab_poolOffset_0.png" alt="slab_poolOffset_0.png"><br>现在让我们来尝试分配一个大小为 2048 的 Buffer 对象，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Buffer.alloc(2 * 1024)</span><br></pre></td></tr></table></figure>
+<p>现在让我们先看下当前的 slab 内存是怎么样的？如下所示：<br><img src="/images/nodejs/slab_poolOffset_2048.png" alt="slab_poolOffset_2048.png"><br>那么这个分配过程是怎样的呢？让我们再看 buffer.js 另外一个核心的方法 allocate(size)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;node&#x2F;blob&#x2F;v10.x&#x2F;lib&#x2F;buffer.js#L318</span><br><span class="line">function allocate(size) &#123;</span><br><span class="line">  if (size &lt;&#x3D; 0) &#123;</span><br><span class="line">    return new FastBuffer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 当分配的空间小于 Buffer.poolSize 向右移位，这里得出来的结果为 4KB</span><br><span class="line">  if (size &lt; (Buffer.poolSize &gt;&gt;&gt; 1)) &#123;</span><br><span class="line">    if (size &gt; (poolSize - poolOffset))</span><br><span class="line">      createPool();</span><br><span class="line">    var b &#x3D; new FastBuffer(allocPool, poolOffset, size);</span><br><span class="line">    poolOffset +&#x3D; size; &#x2F;&#x2F; 已使用空间累加</span><br><span class="line">    alignPool(); &#x2F;&#x2F; 8 字节内存对齐处理</span><br><span class="line">    return b;</span><br><span class="line">  &#125; else &#123; &#x2F;&#x2F; C++ 层面申请</span><br><span class="line">    return createUnsafeBuffer(size);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>读完上面的代码，已经很清晰的可以看到何时会分配小 Buffer 对象，又何时会去分配大 Buffer 对象。</p>
+<h3 id="Buffer-内存分配总结"><a href="#Buffer-内存分配总结" class="headerlink" title="Buffer 内存分配总结"></a>Buffer 内存分配总结</h3><p>这块内容着实难理解，翻了几本 Node.js 相关书籍，朴灵大佬的「深入浅出 Node.js」Buffer 一节还是讲解的挺详细的，推荐大家去阅读下。</p>
+<ol>
+<li>在初次加载时就会初始化 1 个 8KB 的内存空间，buffer.js 源码有体现</li>
+<li>根据申请的内存大小分为 小 Buffer 对象 和 大 Buffer 对象</li>
+<li>小 Buffer 情况，会继续判断这个 slab 空间是否足够</li>
+<li>如果空间足够就去使用剩余空间同时更新 slab 分配状态，偏移量会增加</li>
+<li>如果空间不足，slab 空间不足，就会去创建一个新的 slab 空间用来分配</li>
+<li>大 Buffer 情况，则会直接走 createUnsafeBuffer(size) 函数</li>
+<li>不论是小 Buffer 对象还是大 Buffer 对象，内存分配是在 C++ 层面完成，内存管理在 JavaScript 层面，最终还是可以被 V8 的垃圾回收标记所回收。</li>
+</ol>
+<h2 id="Buffer应用场景"><a href="#Buffer应用场景" class="headerlink" title="Buffer应用场景"></a>Buffer应用场景</h2><p>以下列举一些 Buffer 在实际业务中的应用场景</p>
+<h3 id="I-O-操作"><a href="#I-O-操作" class="headerlink" title="I/O 操作"></a>I/O 操作</h3><p>关于 I/O 可以是文件或网络 I/O，以下为通过流的方式将 input.txt 的信息读取出来之后写入到 output.txt 文件，关于 Stream 与 Buffer 的关系不明白的在回头看下 Buffer 初识 一节讲解的 什么是 Stream?、什么是 Buffer?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const fs &#x3D; require(&#39;fs&#39;);</span><br><span class="line"></span><br><span class="line">const inputStream &#x3D; fs.createReadStream(&#39;input.txt&#39;); &#x2F;&#x2F; 创建可读流</span><br><span class="line">const outputStream &#x3D; fs.createWriteStream(&#39;output.txt&#39;); &#x2F;&#x2F; 创建可写流</span><br><span class="line"></span><br><span class="line">inputStream.pipe(outputStream); &#x2F;&#x2F; 管道读写</span><br></pre></td></tr></table></figure>
+<p>在 Stream 中我们是不需要手动去创建自己的缓冲区，在 Node.js 的流中将会自动创建。</p>
+<h3 id="zlib-js"><a href="#zlib-js" class="headerlink" title="zlib.js"></a>zlib.js</h3><p>zlib.js 为 Node.js 的核心库之一，其利用了缓冲区（Buffer）的功能来操作二进制数据流，提供了压缩或解压功能。参考源代码 <a target="_blank" rel="noopener" href="https://github.com/nodejs/node/blob/master/lib/zlib.js">zlib.js 源码</a></p>
+<h3 id="加解密"><a href="#加解密" class="headerlink" title="加解密"></a>加解密</h3><p>在一些加解密算法中会遇到使用 Buffer，例如 crypto.createCipheriv 的第二个参数 key 为 String 或 Buffer 类型，如果是 Buffer 类型，就用到了本篇我们讲解的内容，以下做了一个简单的加密示例，重点使用了 Buffer.alloc() 初始化一个实例（这个上面有介绍），之后使用了 fill 方法做了填充，这里重点在看下这个方法的使用。<br>buf.fill(value[, offset[, end]][, encoding])</p>
+<ul>
+<li>value: 第一个参数为要填充的内容</li>
+<li>offset: 偏移量，填充的起始位置</li>
+<li>end: 结束填充 buf 的偏移量</li>
+<li>encoding: 编码集</li>
+</ul>
+<p><strong>以下为 Cipher 的对称加密 Demo</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const crypto &#x3D; require(&#39;crypto&#39;);</span><br><span class="line">const [key, iv, algorithm, encoding, cipherEncoding] &#x3D; [</span><br><span class="line">    &#39;a123456789&#39;, &#39;&#39;, &#39;aes-128-ecb&#39;, &#39;utf8&#39;, &#39;base64&#39;</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line">const handleKey &#x3D; key &#x3D;&gt; &#123;</span><br><span class="line">    const bytes &#x3D; Buffer.alloc(16); &#x2F;&#x2F; 初始化一个 Buffer 实例，每一项都用 00 填充</span><br><span class="line">    console.log(bytes); &#x2F;&#x2F; &lt;Buffer 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00&gt;</span><br><span class="line">    bytes.fill(key, 0, 10) &#x2F;&#x2F; 填充</span><br><span class="line">    console.log(bytes); &#x2F;&#x2F; &lt;Buffer 61 31 32 33 34 35 36 37 38 39 00 00 00 00 00 00&gt;</span><br><span class="line"></span><br><span class="line">    return bytes;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let cipher &#x3D; crypto.createCipheriv(algorithm, handleKey(key), iv);</span><br><span class="line">let crypted &#x3D; cipher.update(&#39;Node.js 技术栈&#39;, encoding, cipherEncoding);</span><br><span class="line">    crypted +&#x3D; cipher.final(cipherEncoding);</span><br><span class="line"></span><br><span class="line">console.log(crypted) &#x2F;&#x2F; jE0ODwuKN6iaKFKqd3RF4xFZkOpasy8WfIDl8tRC5t0&#x3D;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Buffer-VS-Cache"><a href="#Buffer-VS-Cache" class="headerlink" title="Buffer VS Cache"></a>Buffer VS Cache</h2><blockquote>
+<p>缓冲（Buffer）与缓存（Cache）的区别？<br><strong>缓冲（Buffer）</strong><br>缓冲（Buffer）是用于处理二进制流数据，将数据缓冲起来，它是临时性的，对于流式数据，会采用缓冲区将数据临时存储起来，等缓冲到一定的大小之后在存入硬盘中。视频播放器就是一个经典的例子，有时你会看到一个缓冲的图标，这意味着此时这一组缓冲区并未填满，当数据到达填满缓冲区并且被处理之后，此时缓冲图标消失，你可以看到一些图像数据。<br><strong>缓存（Cache）</strong><br>缓存（Cache）我们可以看作是一个中间层，它可以是永久性的将热点数据进行缓存，使得访问速度更快，例如我们通过 Memory、Redis 等将数据从硬盘或其它第三方接口中请求过来进行缓存，目的就是将数据存于内存的缓存区中，这样对同一个资源进行访问，速度会更快，也是性能优化一个重要的点。</p>
+</blockquote>
+<h3 id="Buffer-VS-String"><a href="#Buffer-VS-String" class="headerlink" title="Buffer VS String"></a>Buffer VS String</h3><p>通过压力测试来看看 String 和 Buffer 两者的性能如何？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">const http &#x3D; require(&#39;http&#39;);</span><br><span class="line">let s &#x3D; &#39;&#39;;</span><br><span class="line">for (let i&#x3D;0; i&lt;1024*10; i++) &#123;</span><br><span class="line">    s+&#x3D;&#39;a&#39;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const str &#x3D; s;</span><br><span class="line">const bufStr &#x3D; Buffer.from(s);</span><br><span class="line">const server &#x3D; http.createServer((req, res) &#x3D;&gt; &#123;</span><br><span class="line">    console.log(req.url);</span><br><span class="line"></span><br><span class="line">    if (req.url &#x3D;&#x3D;&#x3D; &#39;&#x2F;buffer&#39;) &#123;</span><br><span class="line">        res.end(bufStr);</span><br><span class="line">    &#125; else if (req.url &#x3D;&#x3D;&#x3D; &#39;&#x2F;string&#39;) &#123;</span><br><span class="line">        res.end(str);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.listen(3000);</span><br></pre></td></tr></table></figure>
+<p>以上实例我放在虚拟机里进行测试，你也可以在本地电脑测试，使用 AB 测试工具。</p>
+<h3 id="测试-string"><a href="#测试-string" class="headerlink" title="测试 string"></a>测试 string</h3><p>看以下几个重要的参数指标，之后通过 buffer 传输进行对比</p>
+<ul>
+<li>Complete requests: 21815</li>
+<li>Requests per second: 363.58 [#/sec] (mean)</li>
+<li>Transfer rate: 3662.39 [Kbytes/sec] received<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ab -c 200 -t 60 http:&#x2F;&#x2F;192.168.6.131:3000&#x2F;string</span><br></pre></td></tr></table></figure>
+<img src="/images/nodejs/ab_string.png" alt="ab_string"><h3 id="测试-buffer"><a href="#测试-buffer" class="headerlink" title="测试 buffer"></a>测试 buffer</h3>可以看到通过 buffer 传输总共的请求数为 50000、QPS 达到了两倍多的提高、每秒传输的字节为 9138.82 KB，从这些数据上可以证明提前将数据转换为 Buffer 的方式，可以使性能得到近一倍的提升。</li>
+<li>Complete requests: 50000</li>
+<li>Requests per second: 907.24 [#/sec] (mean)</li>
+<li>Transfer rate: 9138.82 [Kbytes/sec] received<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ab -c 200 -t 60 http:&#x2F;&#x2F;192.168.6.131:3000&#x2F;buffer</span><br></pre></td></tr></table></figure>
+<img src="/images/nodejs/ab_buffer.png" alt="ab_buffer"><br>在 HTTP 传输中传输的是二进制数据，上面例子中的 /string 接口直接返回的字符串，这时候 HTTP 在传输之前会先将字符串转换为 Buffer 类型，以二进制数据传输，通过流（Stream）的方式一点点返回到客户端。但是直接返回 Buffer 类型，则少了每次的转换操作，对于性能也是有提升的。</li>
+</ul>
+<p>在一些 Web 应用中，对于静态数据可以预先转为 Buffer 进行传输，可以有效减少 CPU 的重复使用（重复的字符串转 Buffer 操作）。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nodejs/" rel="tag"># nodejs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/nodejs_Crypto%E5%8A%A0%E8%A7%A3%E5%AF%86%E6%A8%A1%E5%9D%97/" rel="prev" title="Crypto加解密模块">
+      <i class="fa fa-chevron-left"></i> Crypto加解密模块
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E5%88%9D%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">Buffer初识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">什么是二进制数据？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Stream%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">什么是 Stream？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-Buffer%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">什么是 Buffer？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%85%B1%E6%B1%BD%E8%BD%A6%E7%AB%99%E4%B9%98%E8%BD%A6%E4%BE%8B%E5%AD%90"><span class="nav-number">4.1.</span> <span class="nav-text">公共汽车站乘车例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">Buffer基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BABuffer"><span class="nav-number">5.1.</span> <span class="nav-text">创建Buffer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E-Buffer-%E7%B1%BB%E5%9E%8B%E4%BA%92%E8%BD%AC"><span class="nav-number">5.2.</span> <span class="nav-text">字符串与 Buffer 类型互转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2%E8%BF%87%E7%A8%8B%E4%B8%AD%E4%B8%BA%E4%BB%80%E4%B9%88%E5%87%BA%E7%8E%B0%E4%B9%B1%E7%A0%81%EF%BC%9F"><span class="nav-number">5.3.</span> <span class="nav-text">转换过程中为什么出现乱码？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E5%86%85%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">6.</span> <span class="nav-text">Buffer内存机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%8E%9F%E7%90%86"><span class="nav-number">6.1.</span> <span class="nav-text">Buffer内存分配原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%80%BB%E7%BB%93"><span class="nav-number">6.2.</span> <span class="nav-text">Buffer 内存分配总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">7.</span> <span class="nav-text">Buffer应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-%E6%93%8D%E4%BD%9C"><span class="nav-number">7.1.</span> <span class="nav-text">I&#x2F;O 操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#zlib-js"><span class="nav-number">7.2.</span> <span class="nav-text">zlib.js</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E8%A7%A3%E5%AF%86"><span class="nav-number">7.3.</span> <span class="nav-text">加解密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer-VS-Cache"><span class="nav-number">8.</span> <span class="nav-text">Buffer VS Cache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Buffer-VS-String"><span class="nav-number">8.1.</span> <span class="nav-text">Buffer VS String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-string"><span class="nav-number">8.2.</span> <span class="nav-text">测试 string</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95-buffer"><span class="nav-number">8.3.</span> <span class="nav-text">测试 buffer</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

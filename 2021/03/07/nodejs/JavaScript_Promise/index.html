@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Promise 在JavaScript的世界中，所有代码都是单线程执行的。为了使程序不阻塞执行有了异步（I&#x2F;O操作、事件操作），但是异步也有其不好之处，例如：异步回调callback回调地狱的问题，伴随着这些问题有了解决方案Promise。面试指南   Promise 中 .then 的第二参数与 .catch 有什么区别?，参考：错误捕获 怎么让一个函数无论promise对象成功和失败都能被调用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Promise">
+<meta property="og:url" content="http://example.com/2021/03/07/nodejs/JavaScript_Promise/index.html">
+<meta property="og:site_name" content="五五">
+<meta property="og:description" content="Promise 在JavaScript的世界中，所有代码都是单线程执行的。为了使程序不阻塞执行有了异步（I&#x2F;O操作、事件操作），但是异步也有其不好之处，例如：异步回调callback回调地狱的问题，伴随着这些问题有了解决方案Promise。面试指南   Promise 中 .then 的第二参数与 .catch 有什么区别?，参考：错误捕获 怎么让一个函数无论promise对象成功和失败都能被调用">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-03-06T16:09:38.000Z">
+<meta property="article:modified_time" content="2021-03-07T04:39:06.147Z">
+<meta property="article:author" content="闫海江">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/03/07/nodejs/JavaScript_Promise/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Promise | 五五</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="五五" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">五五</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-主页">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>主页</a>
+
+  </li>
+        <li class="menu-item menu-item-标签">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-分类">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-归档">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/JavaScript_Promise/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Promise
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 00:09:38 / Modified: 12:39:06" itemprop="dateCreated datePublished" datetime="2021-03-07T00:09:38+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><blockquote>
+<p>在JavaScript的世界中，所有代码都是单线程执行的。为了使程序不阻塞执行有了异步（I/O操作、事件操作），但是异步也有其不好之处，例如：异步回调callback回调地狱的问题，伴随着这些问题有了解决方案Promise。<br>面试指南</p>
+</blockquote>
+<ul>
+<li>Promise 中 .then 的第二参数与 .catch 有什么区别?，参考：错误捕获</li>
+<li>怎么让一个函数无论promise对象成功和失败都能被调用？，参考：finally</li>
+</ul>
+<h3 id="promise的基本使用和原理"><a href="#promise的基本使用和原理" class="headerlink" title="promise的基本使用和原理"></a>promise的基本使用和原理</h3><ol>
+<li>如何异常捕获（Error、reject）通过catch捕获</li>
+<li>多个串联-链式执行的好处</li>
+<li>Promise.all和Promise.race</li>
+<li>Promise标准-状态变化（Pending —— Fulfilled/Rejected）</li>
+<li>then函数，不明文指定返回实例，返回本身的promise实例，否则返回指定的promise实例</li>
+</ol>
+<h3 id="callback方式书写"><a href="#callback方式书写" class="headerlink" title="callback方式书写"></a>callback方式书写</h3><blockquote>
+<p>回调函数方式书写，如果异步请求多了，将会很难维护，程序看着很乱，最终会导致回调地狱。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function(callback)&#123;</span><br><span class="line">    console.log(&#39;执行&#39;);</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">      callback &amp;&amp; callback()</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax(function()&#123;</span><br><span class="line">    console.log(&#39;执行 ajax方法&#39;);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="promise方式书写"><a href="#promise方式书写" class="headerlink" title="promise方式书写"></a>promise方式书写</h3><ul>
+<li><strong>resove</strong>：执行下一步操作</li>
+<li><strong>reject</strong>：中断当前操作</li>
+<li><strong>then</strong>：是Promise返回的对象，执行下一个，如果有两个函数，第一个表示resolved(已成功),第二个表示rejected(已失败)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let ajax &#x3D; function()&#123;</span><br><span class="line">  console.log(&#39;promise&#39;,&#39;执行&#39;);</span><br><span class="line">  return new Promise(function(resolve,reject)&#123;</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">      resolve()</span><br><span class="line">    &#125;,1000);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ajax().then(function()&#123;</span><br><span class="line">  console.log(&#39;promise&#39;,&#39;执行ajax方法&#39;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>执行两个Promise的效果<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise&#39;,&#39;执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        resolve()</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      return new Promise(function(resolve,reject)&#123;</span><br><span class="line">        setTimeout(function()&#123;</span><br><span class="line">          resolve();</span><br><span class="line">        &#125;,1000);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;promise3&#39;,&#39;执行3&#39;);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>多个Promise实例实现串行操作<blockquote>
+<p>执行a b c d 如果中间出了错误使用catch来捕获</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function(num)&#123;</span><br><span class="line">    console.log(&#39;执行4&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      if (num &gt; 5) &#123;</span><br><span class="line">        resolve();</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        throw new Error(&#39;出错了&#39;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ajax(6).then(function()&#123;</span><br><span class="line">    console.log(&#39;log&#39;,&#39;6&#39;);</span><br><span class="line">  &#125;).catch(function(err)&#123;</span><br><span class="line">    console.log(&#39;catch&#39;,err);</span><br><span class="line">  &#125;);</span><br><span class="line">  ajax(3).then(function()&#123;</span><br><span class="line">    console.log(&#39;log&#39;,&#39;3&#39;);</span><br><span class="line">  &#125;).catch(function(err)&#123;</span><br><span class="line">    console.log(&#39;catch&#39;,&#39;err&#39;);</span><br><span class="line">  &#125;);</span><br><span class="line">  &#x2F;&#x2F; 输出：</span><br><span class="line">  &#x2F;&#x2F; 执行4</span><br><span class="line">  &#x2F;&#x2F; 执行4</span><br><span class="line">  &#x2F;&#x2F; log 6</span><br><span class="line">  &#x2F;&#x2F; catch err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h3><blockquote>
+<p>finally() 方法返回一个Promise，在promise执行结束时，无论结果是fulfilled或者是rejected，在执行then()和catch()后，都会执行finally指定的回调函数。这为指定执行完promise后，无论结果是fulfilled还是rejected都需要执行的代码提供了一种方式，避免同样的语句需要在then()和catch()中各写一次的情况。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Promise.resolve(&#39;success&#39;).then(result &#x3D;&gt; &#123;</span><br><span class="line">  console.log(&#39;then: &#39;, result)</span><br><span class="line"></span><br><span class="line">  return Promise.resolve(result);</span><br><span class="line">&#125;).catch(err &#x3D;&gt; &#123;</span><br><span class="line">  console.error(&#39;catch: &#39;, err);</span><br><span class="line"></span><br><span class="line">  return Promise.reject(err);</span><br><span class="line">&#125;).finally(result &#x3D;&gt; &#123;</span><br><span class="line">  console.info(&#39;finally: &#39;, result);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; then:  success</span><br><span class="line">&#x2F;&#x2F; finally:  undefined</span><br><span class="line">&#x2F;&#x2F; Promise &#123;&lt;resolved&gt;: &quot;success&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="promise并行执行"><a href="#promise并行执行" class="headerlink" title="promise并行执行"></a>promise并行执行</h3><ul>
+<li>Promise.all()<blockquote>
+<p>Promise.all是将多个Promise实例当成一个Promise实例，all方法里是一个数组，数组传进来多个Promise实例，当多个Promise实例状态发生改变的时候，这个新的Promise实例才会发生变化。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有图片加载完在添加到页面上</span><br><span class="line">function loadImg(src)&#123;</span><br><span class="line">  return new Promise((resolve,reject) &#x3D;&gt; &#123;</span><br><span class="line">    let img &#x3D; document.createElement(&#39;img&#39;);</span><br><span class="line">    img.src &#x3D; src;</span><br><span class="line">    img.onload &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">      resolve(img);</span><br><span class="line">    &#125;</span><br><span class="line">    img.onerror &#x3D; (err) &#x3D;&gt; &#123;</span><br><span class="line">      reject(err)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function showImgs(imgs)&#123;</span><br><span class="line">  imgs.forEach(function(img)&#123;</span><br><span class="line">    document.body.appendChild(img)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 每个loadImg()方法都是一个Promise实例只有当三个都发生该变化，才会执行新的Promise实例既Promise.all()</span><br><span class="line">Promise.all([</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170512190539489.jpeg&#39;),</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170225143135972.jpg&#39;),</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170217225453679.jpg&#39;)</span><br><span class="line">]).then(showImgs)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="promise率先执行"><a href="#promise率先执行" class="headerlink" title="promise率先执行"></a>promise率先执行</h3><ul>
+<li>Promise.race只要其中一个实例率先发生改变，Promise.race实例也将发生改变，其他的将不在响应。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F; 有一个图片加载完就添加到页面上</span><br><span class="line">  function loadImg(src)&#123;</span><br><span class="line">    return new Promise((resolve,reject) &#x3D;&gt; &#123;</span><br><span class="line">      let img &#x3D; document.createElement(&#39;img&#39;);</span><br><span class="line">      img.src &#x3D; src;</span><br><span class="line">      img.onload &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">        resolve(img);</span><br><span class="line">      &#125;</span><br><span class="line">      img.onerror &#x3D; (err) &#x3D;&gt; &#123;</span><br><span class="line">        reject(err)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function showImgs(img)&#123;</span><br><span class="line">    let p &#x3D; document.createElement(&#39;p&#39;);</span><br><span class="line">    p.appendChild(img);</span><br><span class="line">    document.body.appendChild(p);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Promise.race([</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170512190539489.jpeg&#39;),</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170225143135972.jpg&#39;),</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170217225453679.jpg&#39;)</span><br><span class="line">  ]).then(showImgs)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="错误捕获"><a href="#错误捕获" class="headerlink" title="错误捕获"></a>错误捕获</h3><blockquote>
+<p>Promise.then第二个参数与catch捕获错误的区别?</p>
+</blockquote>
+<ul>
+<li>.then第二参数捕获错误<blockquote>
+<p>.then第二个回调参数捕获错误具有就近的原则，不会影响后续then的进行。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  const ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise开始执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        reject(&#96;There&#39;s a mistake&#96;);</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then1&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.resolve();</span><br><span class="line">    &#125;, err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;then1里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then2&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.reject(&#96;There&#39;s a then mistake&#96;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;catch里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 输出</span><br><span class="line">  &#x2F;&#x2F; promise开始执行</span><br><span class="line">  &#x2F;&#x2F; then1里面捕获的err:  There&#39;s a mistake</span><br><span class="line">  &#x2F;&#x2F; then2</span><br><span class="line">  &#x2F;&#x2F; catch里面捕获的err:  There&#39;s a then mistake</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>catch捕获错误<blockquote>
+<p>Promise抛错具有冒泡机制，能够不断传递，可以使用catch统一处理，下面代码中不会输出then1 then2会跳过，直接执行catch处理错误</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  const ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise开始执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        reject(&#96;There&#39;s a mistake&#96;);</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then1&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.resolve();</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then2&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.reject(&#96;There&#39;s a then mistake&#96;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;catch里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 输出</span><br><span class="line">  &#x2F;&#x2F; promise开始执行</span><br><span class="line">  &#x2F;&#x2F; catch里面捕获的err:  There&#39;s a then mistake</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+总结： 不论是Promise还是async/await在写法上解决了异步回调的问题，但是任何写法都不会改变JS单线程、异步的本质，除非js执行引擎发生变化。</li>
+</ul>
+<h3 id="手写-Promise-代码"><a href="#手写-Promise-代码" class="headerlink" title="手写 Promise 代码"></a>手写 Promise 代码</h3><p>这是一个经典的面试问题了，我将它放了最后，不废话直接上代码，共分为 5 部份完成，实现思路如下，理清了 Promise 的实现原理，很多问题自然就迎刃而解了。</p>
+<ol>
+<li>声明 MayJunPromise 类<br>主要在构造函数里做一些初始化操作</li>
+</ol>
+<ul>
+<li>行 {1} 初始化一些默认值，Promise 的状态、成功时的 value、失败时的原因</li>
+<li>行 {2} onResolvedCallbacks 用于一些异步处理 const p = new Promise(resolve =&gt; { setTimeout(function(){ resolve(1) }, 5000) })，当 resolve 在 setTimeout 里时，我们调用 p.then() 此时的状态为 pending，因此我们需要一个地方来保存，此处就是用于保存 Promise resolve 时的回调函数集合</li>
+<li>行 {3} onRejectedCallbacks 与行 {2} 同理，保存 Promise reject 回调函数集合</li>
+<li>行 {4} 成功时回调，先进行状态判断是不可逆的，如果 status = pending 修改状态和成功时的 value</li>
+<li>行 {5} 失败时回调，与上面行 {4} 同理，例如 resolve(1); reject(‘err’); 第二个 reject 就无法覆盖</li>
+<li>行 {6} 自执行</li>
+<li>行 {7} 运行失败错误捕获</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 封装一个自己的 Promise</span><br><span class="line"> *&#x2F;</span><br><span class="line">class MayJunPromise &#123;</span><br><span class="line">  constructor(fn) &#123;</span><br><span class="line">    &#x2F;&#x2F; &#123;1&#125; 初始化一些默认值</span><br><span class="line">    this.status &#x3D; &#39;pending&#39;; &#x2F;&#x2F; 一个 promise 有且只有一个状态 (pending | fulfilled | rejected)</span><br><span class="line">    this.value &#x3D; undefined; &#x2F;&#x2F; 一个 JavaScript 合法值（包括 undefined，thenable，promise）</span><br><span class="line">    this.reason &#x3D; undefined; &#x2F;&#x2F; 是一个表明 promise 失败的原因的值</span><br><span class="line">    this.onResolvedCallbacks &#x3D; []; &#x2F;&#x2F; &#123;2&#125;</span><br><span class="line">    this.onRejectedCallbacks &#x3D; []; &#x2F;&#x2F; &#123;3&#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; &#123;4&#125; 成功回调</span><br><span class="line">    let resolve &#x3D; value &#x3D;&gt; &#123;</span><br><span class="line">      if (this.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123;</span><br><span class="line">        this.status &#x3D; &#39;fulfilled&#39;; &#x2F;&#x2F; 终态</span><br><span class="line">        this.value &#x3D; value; &#x2F;&#x2F; 终值</span><br><span class="line">        this.onResolvedCallbacks.forEach(itemFn &#x3D;&gt; &#123;</span><br><span class="line">          itemFn()</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; &#123;5&#125; 失败回调</span><br><span class="line">    let reject &#x3D; reason &#x3D;&gt; &#123;</span><br><span class="line">      if (this.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123; &#x2F;&#x2F; 状态不可逆，例如 resolve(1);reject(&#39;err&#39;); 第二个 reject 就无法覆盖</span><br><span class="line">        this.status &#x3D; &#39;rejected&#39;; &#x2F;&#x2F; 终态</span><br><span class="line">        this.reason &#x3D; reason; &#x2F;&#x2F; 终值</span><br><span class="line">        this.onRejectedCallbacks.forEach(itemFn &#x3D;&gt; itemFn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    try &#123;</span><br><span class="line">      &#x2F;&#x2F; &#123;6&#125; 自执行</span><br><span class="line">      fn(resolve, reject);</span><br><span class="line">    &#125; catch(err) &#123;</span><br><span class="line">      reject(err); &#x2F;&#x2F; &#123;7&#125; 失败时捕获</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Then 方法</li>
+</ol>
+<ul>
+<li><p>一个 promise 必须提供一个 then 方法以访问其当前值、终值和据因</p>
+</li>
+<li><p>行 {8} onFulfilled、onRejected 这两个参数可选，由于 Promise .then 是可以链式调用的，对于值穿透的场景要做判断，如果不传，则返回一个函数，也就是将上个结果进行传递</p>
+</li>
+<li><p>行 {9} then 方法必须返回一个 promise 对象</p>
+</li>
+<li><p>行 {10}、{11} 、{12} 也是 then 方法内实现的三种情况，相类似，次数只拿状态等于 fulfilled 进行说明</p>
+</li>
+<li><p>行 {10.1}  Promise/A+ 规范定义：要确保 onFulfilled、onRejected 在下一轮事件循环中被调用，你可以使用 setTimeout 来实现，因为我这里是在 Node.js 环境下，因此推荐使用了 setImmediate 来注册事件（因为可以避免掉 setTimeout 的延迟）</p>
+</li>
+<li><p>行  {10.2} Promise/A+ 标准规定：如果 onFulfilled 或 onRejected 返回的是一个 x，那么它会以 [[Resolve]](promise2, x) 处理解析，我们定义解析的函数 resolveMayJunPromise，也是一个核心函数，下面进行讲解 ```javascript /**</p>
+</li>
+<li><p>封装一个自己的 Promise</p>
+</li>
+<li><p>/ class MayJunPromise { …</p>
+</li>
+</ul>
+<ul>
+<li><p>一个 promise 必须提供一个 then 方法以访问其当前值、终值和据因</p>
+</li>
+<li><p>@param { Function } onFulfilled 可选，如果是一个函数一定是在状态为 fulfilled 后调用，并接受一个参数 value</p>
+</li>
+<li><p>@param { Function } onRejected 可选，如果是一个函数一定是在状态为 rejected 后调用，并接受一个参数 reason</p>
+</li>
+<li><p>@returns { Promise } 返回值必须为 Promise</p>
+</li>
+<li><p>/ then(onFulfilled, onRejected) { // {8} 值穿透，把 then 的默认值向后传递，因为标准规定 onFulfilled、onRejected 是可选参数 // 场景：new Promise(resolve =&gt; resolve(1)).then().then(value =&gt; console.log(value)); onFulfilled = Object.prototype.toString.call(onFulfilled) === ‘[object Function]’ ? onFulfilled : function(value) {return value}; onRejected = Object.prototype.toString.call(onRejected) === ‘[object Function]’ ? onRejected : function(reason) {throw reason};</p>
+<p>// {9} then 方法必须返回一个 promise 对象 const promise2 = new MayJunPromise((resolve, reject) =&gt; { // {10} if (this.status === ‘fulfilled’) { // 这里的 this 会继承外层上下文绑定的 this<br>// {10.1} Promise/A+ 规定：确保 onFulfilled、onRejected 在下一轮事件循环中被调用<br>// 可以使用宏任务 (setTimeout、setImmediate) 或微任务（MutationObsever、process.nextTick）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    &#x2F;&#x2F; &#123;10.2&#125; Promise&#x2F;A+ 标准规定：如果 onFulfilled 或 onRejected 返回的是一个 x，那么它会以 [[Resolve]](promise2, x) 处理解析</span><br><span class="line">    const x &#x3D; onFulfilled(this.value);</span><br><span class="line">    &#x2F;&#x2F; 这里定义解析 x 的函数为 resolveMayJunPromise</span><br><span class="line">    resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    reject(e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>}<br>// {11} if (this.status === ‘rejected’) {</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    const x &#x3D; onRejected(this.reason)</span><br><span class="line">    resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    reject(e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>}<br>// {12} // 有些情况无法及时获取到状态，初始值仍是 pending，例如： // return new Promise(resolve =&gt; { setTimeout(function() { resolve(1) }, 5000) }) // .then(result =&gt; { console.log(result) }) if (this.status === ‘pending’) {</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">this.onResolvedCallbacks.push(() &#x3D;&gt; &#123;</span><br><span class="line">  setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      const x &#x3D; onFulfilled(this.value);</span><br><span class="line">      resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">this.onRejectedCallbacks.push(() &#x3D;&gt; &#123;</span><br><span class="line">  setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      const x &#x3D; onRejected(this.reason)</span><br><span class="line">      resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>} });<br>return promise2; } }</p>
+</li>
+</ul>
+<ol start="3">
+<li>Promise 解决过程<br>声明函数 resolveMayJunPromise()，<code>Promise 解决过程</code>是一个抽象的操作，在这里可以做到与系统的 Promise 或一些遵循 Promise/A+ 规范的 Promise 实现相互交互，以下代码建议跟随 Promise/A+ 规范进行阅读，规范上面也写的很清楚。</li>
+</ol>
+<p>注意：在实际编码测试过程中规范 [2.3.2] 样写还是有点问题，你要根据其它的 Promise 的状态值进行判断，此处注释掉了，建议使用  [2.3.3] 也是可以兼容的 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Promise 解决过程</span><br><span class="line"> * @param &#123; Promise &#125; promise2 </span><br><span class="line"> * @param &#123; any &#125; x </span><br><span class="line"> * @param &#123; Function &#125; resolve </span><br><span class="line"> * @param &#123; Function &#125; reject </span><br><span class="line"> *&#x2F;</span><br><span class="line">function resolveMayJunPromise(promise2, x, resolve, reject)&#123;</span><br><span class="line">  &#x2F;&#x2F; [2.3.1] promise 和 x 不能指向同一对象，以 TypeError 为据因拒绝执行 promise，例如：</span><br><span class="line">  &#x2F;&#x2F; let p &#x3D; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F; let p2 &#x3D; p.then(() &#x3D;&gt; p2); &#x2F;&#x2F; 如果不做判断，这样将会陷入死循环</span><br><span class="line">  if (promise2 &#x3D;&#x3D;&#x3D; x) &#123;</span><br><span class="line">    return reject(new TypeError(&#39;Chaining cycle detected for promise&#39;));</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  &#x2F;&#x2F; [2.3.2] 判断 x 是一个 Promise 实例，可以能使来自系统的 Promise 实例，要兼容，例如：</span><br><span class="line">  &#x2F;&#x2F; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F;        .then(() &#x3D;&gt; new Promise( resolve &#x3D;&gt; resolve(2)))</span><br><span class="line">  &#x2F;&#x2F; 这一块发现也无需，因为 [2.3.3] 已经包含了</span><br><span class="line">  &#x2F;&#x2F; if (x instanceof Promise) &#123;</span><br><span class="line">  &#x2F;&#x2F;     &#x2F;&#x2F; [2.3.2.1] 如果 x 是 pending 状态，那么保留它（递归执行这个 resolveMayJunPromise 处理程序）</span><br><span class="line">  &#x2F;&#x2F;     &#x2F;&#x2F; 直到 pending 状态转为 fulfilled 或 rejected 状态</span><br><span class="line">  &#x2F;&#x2F;     if (x.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123;</span><br><span class="line">  &#x2F;&#x2F;         x.then(y &#x3D;&gt; &#123;</span><br><span class="line">  &#x2F;&#x2F;             resolveMayJunPromise(promise2, y, resolve, reject);</span><br><span class="line">  &#x2F;&#x2F;         &#125;, reject)</span><br><span class="line">  &#x2F;&#x2F;     &#125; else if (x.status &#x3D;&#x3D;&#x3D; &#39;fulfilled&#39;) &#123; &#x2F;&#x2F; [2.3.2.2] 如果 x 处于执行态，resolve 它</span><br><span class="line">  &#x2F;&#x2F;         x.then(resolve); </span><br><span class="line">  &#x2F;&#x2F;     &#125; else if (x.status &#x3D;&#x3D;&#x3D; &#39;rejected&#39;) &#123; &#x2F;&#x2F; [2.3.2.3] 如果 x 处于拒绝态，reject 它</span><br><span class="line">  &#x2F;&#x2F;         x.then(reject);</span><br><span class="line">  &#x2F;&#x2F;     &#125;</span><br><span class="line">  &#x2F;&#x2F;     return;</span><br><span class="line">  &#x2F;&#x2F; &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; [2.3.3] x 为对象或函数，这里可以兼容系统的 Promise</span><br><span class="line">  &#x2F;&#x2F; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F;        .then(() &#x3D;&gt; new Promise( resolve &#x3D;&gt; resolve(2)))</span><br><span class="line">  if (x !&#x3D; null &amp;&amp; (x instanceof Promise || typeof x &#x3D;&#x3D;&#x3D; &#39;object&#39; || typeof x &#x3D;&#x3D;&#x3D; &#39;function&#39;)) &#123;</span><br><span class="line">    let called &#x3D; false;</span><br><span class="line">    try &#123;</span><br><span class="line">      &#x2F;&#x2F; [2.3.3.1] 把 x.then 赋值给 then</span><br><span class="line">      &#x2F;&#x2F; 存储了一个指向 x.then 的引用，以避免多次访问 x.then 属性，这种预防措施确保了该属性的一致性，因为其值可能在检索调用时被改变。</span><br><span class="line">      const then &#x3D; x.then;</span><br><span class="line"></span><br><span class="line">      &#x2F;&#x2F; [2.3.3.3] 如果 then 是函数（默认为是一个 promise），将 x 作为函数的作用域 this 调用之。</span><br><span class="line">      &#x2F;&#x2F; 传递两个回调函数作为参数，第一个参数叫做 resolvePromise (成功回调) ，第二个参数叫做 rejectPromise（失败回调）</span><br><span class="line">      if (typeof then &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; then.call(x, resolvePromise, rejectPromise) 等价于 x.then(resolvePromise, rejectPromise)，笔者理解此时会调用到 x 即 MayJunPromise 我们自己封装的 then 方法上</span><br><span class="line">        then.call(x, y &#x3D;&gt; &#123; &#x2F;&#x2F; [2.3.3.3.1] 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)</span><br><span class="line">            if (called) return;</span><br><span class="line">            called &#x3D; true;</span><br><span class="line">            resolveMayJunPromise(promise2, y, resolve, reject);</span><br><span class="line">        &#125;, e &#x3D;&gt; &#123; &#x2F;&#x2F; [2.3.3.3.2] 如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise</span><br><span class="line">          if (called) return;</span><br><span class="line">          called &#x3D; true;</span><br><span class="line"></span><br><span class="line">          reject(e);</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        &#x2F;&#x2F; [2.3.3.4 ] 如果 then 不是函数，以 x 为参数执行 promise</span><br><span class="line">        resolve(x)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; catch(e) &#123; &#x2F;&#x2F; [2.3.3.2] 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise</span><br><span class="line">      if (called) return;</span><br><span class="line">      called &#x3D; true;</span><br><span class="line"></span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    resolve(x);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>验证你的 Promise 是否正确<br>Promise 提供了一个测试脚本，进行正确性验证。</li>
+</ol>
+<p>同时需要暴露出一个 deferred 方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MayJunPromise.defer &#x3D; MayJunPromise.deferred &#x3D; function () &#123;</span><br><span class="line">  let dfd &#x3D; &#123;&#125;</span><br><span class="line">  dfd.promise &#x3D; new MayJunPromise((resolve,reject)&#x3D;&gt;&#123;</span><br><span class="line">    dfd.resolve &#x3D; resolve;</span><br><span class="line">    dfd.reject &#x3D; reject;</span><br><span class="line">  &#125;);</span><br><span class="line">  return dfd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports &#x3D; MayJunPromise;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>catch、resolve、reject、all、race 方法实现<br>Promise/A+ 规范中只提供了 then 方法，但是我们使用的 catch、Promise.all、Promise.race 等都可以在 then 方法的基础上进行实现<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">class MayJunPromise &#123;</span><br><span class="line">   constructor(fn)&#123;...&#125;</span><br><span class="line">  then()&#123;...&#125;,</span><br><span class="line">  &#x2F;**</span><br><span class="line">   * 捕获错误</span><br><span class="line">   * @param &#123; Function &#125; onRejected </span><br><span class="line">   *&#x2F;</span><br><span class="line">  catch(onRejected) &#123;</span><br><span class="line">    return this.then(undefined, onRejected);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 仅返回成功态，即 status &#x3D; fulfilled</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.resolve &#x3D; function(value) &#123;</span><br><span class="line">  return (value instanceof Promise || value instanceof MayJunPromise) ? value &#x2F;&#x2F; 如果是 Promise 实例直接返回</span><br><span class="line">    : new MayJunPromise(resolve &#x3D;&gt; resolve(value));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 仅返回失败态，即 status &#x3D; rejected</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.reject &#x3D; function(value) &#123;</span><br><span class="line">  return (value instanceof Promise || value instanceof MayJunPromise) ? value : new MayJunPromise(reject &#x3D;&gt; reject(value));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * MayJunPromise.all() 并行执行</span><br><span class="line"> * @param &#123; Array &#125; arr</span><br><span class="line"> * @returns &#123; Array &#125;</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.all &#x3D; function(arr) &#123;</span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    const length &#x3D; arr.length;</span><br><span class="line">    let results &#x3D; []; &#x2F;&#x2F; 保存执行结果</span><br><span class="line">    let count &#x3D; 0; &#x2F;&#x2F; 计数器</span><br><span class="line"></span><br><span class="line">    for (let i&#x3D;0; i&lt;length; i++) &#123;</span><br><span class="line">      MayJunPromise.resolve(arr[i]).then(res &#x3D;&gt; &#123;</span><br><span class="line">        results[i] &#x3D; res;</span><br><span class="line">        count++;</span><br><span class="line"></span><br><span class="line">        if (count &#x3D;&#x3D;&#x3D; length) &#123; &#x2F;&#x2F; 全部都变为 fulfilled 之后结束</span><br><span class="line">          resolve(results);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, err &#x3D;&gt; reject(err)); &#x2F;&#x2F; 只要有一个失败，就将失败结果返回</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * MayJunPromise.race() 率先执行，只要一个执行完毕就返回结果;</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.race &#x3D; function(arr) &#123;</span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    for (let i&#x3D;0; i&lt;arr.length; i++) &#123;</span><br><span class="line">      MayJunPromise.resolve(arr[i])</span><br><span class="line">        .then(result &#x3D;&gt; resolve(result), err &#x3D;&gt; reject(err));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>并发请求控制<br>Promise.all 同时将请求发出，假设我现在有上万条请求，势必会造成服务器的压力，如果我想限制在最大并发 100 该怎么做？例如，在 Chrome 浏览器中就有这样的限制，Chrome 中每次最大并发链接为 6 个，其余的链接需要等待其中任一个完成，才能得到执行，下面定义 allByLimit 方法实现类似功能。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 并发请求限制</span><br><span class="line"> * @param &#123; Array &#125; arr 并发请求的数组</span><br><span class="line"> * @param &#123; Number &#125; limit 并发限制数</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.allByLimit &#x3D; function(arr, limit) &#123;</span><br><span class="line">  const length &#x3D; arr.length;</span><br><span class="line">  const requestQueue &#x3D; [];</span><br><span class="line">  const results &#x3D; [];</span><br><span class="line">  let index &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    const requestHandler &#x3D; function() &#123;    </span><br><span class="line">      console.log(&#39;Request start &#39;, index);</span><br><span class="line">      const request &#x3D; arr[index].then(res &#x3D;&gt; res, err &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;Error&#39;, err);</span><br><span class="line"></span><br><span class="line">        return err;</span><br><span class="line">      &#125;).then(res &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;Number of concurrent requests&#39;, requestQueue.length)</span><br><span class="line">        const count &#x3D; results.push(res); &#x2F;&#x2F; 保存所有的结果</span><br><span class="line"></span><br><span class="line">        requestQueue.shift(); &#x2F;&#x2F; 每完成一个就从请求队列里剔除一个</span><br><span class="line"></span><br><span class="line">        if (count &#x3D;&#x3D;&#x3D; length) &#123; &#x2F;&#x2F; 所有请求结束，返回结果</span><br><span class="line">          resolve(results);</span><br><span class="line">        &#125; else if (count &lt; length &amp;&amp; index &lt; length - 1) &#123;</span><br><span class="line">          ++index;</span><br><span class="line">          requestHandler(); &#x2F;&#x2F; 继续下一个请求</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      if (requestQueue.push(request) &lt; limit) &#123;</span><br><span class="line">        ++index;</span><br><span class="line">        requestHandler();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    requestHandler()</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+测试，定义一个 sleep 睡眠函数，模拟延迟执行<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 睡眠函数</span><br><span class="line"> * @param &#123; Number &#125; ms 延迟时间|毫秒</span><br><span class="line"> * @param &#123; Boolean &#125; flag 默认 false，若为 true 返回 reject 测试失败情况</span><br><span class="line"> *&#x2F;</span><br><span class="line">const sleep &#x3D; (ms&#x3D;0, flag&#x3D;false) &#x3D;&gt; new Promise((resolve, reject) &#x3D;&gt; setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">  if (flag) &#123;</span><br><span class="line">    reject(&#39;Reject &#39; + ms);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    resolve(ms);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, ms));</span><br><span class="line"></span><br><span class="line">MayJunPromise.allByLimit([</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(5000, true),</span><br><span class="line">  sleep(10000),</span><br><span class="line">], 3).then(res &#x3D;&gt; &#123;</span><br><span class="line">  console.log(res);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 以下为运行结果</span><br><span class="line"></span><br><span class="line">Request start  0</span><br><span class="line">Request start  1</span><br><span class="line">Request start  2</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Request start  3</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Request start  4</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Error Reject 5000</span><br><span class="line">Number of concurrent requests 2</span><br><span class="line">Number of concurrent requests 1</span><br><span class="line">[ 1000, 1000, 1000, &#39;Reject 5000&#39;, 10000 ]</span><br></pre></td></tr></table></figure></li>
+<li>Promise reference</li>
+</ol>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/21834559">https://zhuanlan.zhihu.com/p/21834559</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b2f02cd5188252b937548ab">https://juejin.im/post/5b2f02cd5188252b937548ab</a></li>
+<li><a target="_blank" rel="noopener" href="https://promisesaplus.com/">https://promisesaplus.com/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ituring.com.cn/article/66566">https://www.ituring.com.cn/article/66566</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/06/nodejs/JavaScript%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="prev" title="数据结构Set、Map">
+      <i class="fa fa-chevron-left"></i> 数据结构Set、Map
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/" rel="next" title="JavaScript 扩展系列">
+      JavaScript 扩展系列 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise"><span class="nav-number">1.</span> <span class="nav-text">Promise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#promise%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%E5%92%8C%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">promise的基本使用和原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#callback%E6%96%B9%E5%BC%8F%E4%B9%A6%E5%86%99"><span class="nav-number">3.</span> <span class="nav-text">callback方式书写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#promise%E6%96%B9%E5%BC%8F%E4%B9%A6%E5%86%99"><span class="nav-number">4.</span> <span class="nav-text">promise方式书写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finally"><span class="nav-number">5.</span> <span class="nav-text">finally</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#promise%E5%B9%B6%E8%A1%8C%E6%89%A7%E8%A1%8C"><span class="nav-number">6.</span> <span class="nav-text">promise并行执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#promise%E7%8E%87%E5%85%88%E6%89%A7%E8%A1%8C"><span class="nav-number">7.</span> <span class="nav-text">promise率先执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%99%E8%AF%AF%E6%8D%95%E8%8E%B7"><span class="nav-number">8.</span> <span class="nav-text">错误捕获</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%86%99-Promise-%E4%BB%A3%E7%A0%81"><span class="nav-number">9.</span> <span class="nav-text">手写 Promise 代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">闫海江</p>
+  <div class="site-description" itemprop="description">web前端 java android ios 宅</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:yourname@gmail.com" title="E-Mail → mailto:yourname@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://zhoulingyu.com/" title="http:&#x2F;&#x2F;zhoulingyu.com&#x2F;" rel="noopener" target="_blank">周小鱼</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://www.ptbird.cn/" title="http:&#x2F;&#x2F;www.ptbird.cn&#x2F;" rel="noopener" target="_blank">postbird</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">闫海江</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
