@@ -159,6 +159,548 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/07/nodejs/%E7%AE%97%E6%B3%95%E9%98%9F%E5%88%97/" class="post-title-link" itemprop="url">算法队列</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 15:23:51 / Modified: 15:56:01" itemprop="dateCreated datePublished" datetime="2021-03-07T15:23:51+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>队列，英文 First In First Out 简称 FIFO，遵从<strong>先进先出</strong>的原则，与 “栈” 相反，在队列的尾部添加元素，在队列的头部删除元素，如果队列中没有元素就称为空队列。</p>
+<p>队列对应到生活场景中有很多例子，例如，我们去火车站窗口购票总要排队，先排队的人先购票，有新的人来了则在队尾排队等待前面的完成了依次购票。另外我们的订单超时队列、活动抢购先到先得等等，队列在生活中应用很广泛。</p>
+<h3 id="JavaScript-数组实现队列"><a href="#JavaScript-数组实现队列" class="headerlink" title="JavaScript 数组实现队列"></a>JavaScript 数组实现队列</h3><p>JavaScript 中提供的数组功能即可实现一个简单的队列，使用起来也很方便，熟悉相关 API 即可，下面我们来看下基于 JS 数组的入队、出队过程实现。<br><img src="/images/algorithm/js-array-queue.png" alt="js-array-queue"><br>以上图片展示了队列的初始化、入队、出队过程，下面我们采用 JavaScript 原型链的方式实现。</p>
+<ul>
+<li>初始化队列<br>初始化一个存储队列中元素的数据结构，如果未传入默认赋值空数组，传入需先校验类型是否正确。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function QueueStudy(elements) &#123;</span><br><span class="line">    if (elements &amp;&amp; !(elements instanceof Array)) &#123;</span><br><span class="line">        throw new Error(&#39;必须为数组格式！&#39;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    this.elements &#x3D; elements || [];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>队列添加元素<br>实现一个 enQueue 方法，向队列添加元素，注意只能是队列尾部添加，使用 JavaScript 数组中的 push 方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QueueStudy.prototype.enQueue &#x3D; function(element) &#123;</span><br><span class="line">    this.elements.push(element);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>队列移除元素<br>实现一个 deQueue 方法，向队列头部弹出元素，使用 JavaScript 数组中的 shift 方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QueueStudy.prototype.deQueue &#x3D; function() &#123;</span><br><span class="line">    return this.elements.shift();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+通过 JavaScript 数组实现是很简单的，源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-js.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-js.js</a></li>
+</ul>
+<h3 id="优先队列"><a href="#优先队列" class="headerlink" title="优先队列"></a>优先队列</h3><p>优先队列，元素的添加、删除是基于优先级进行的。一个现实的例子就是机场登机的顺序。头等舱和商务舱乘客的优先级要高于经济舱乘客。在有些国家，老年人和孕妇（或带小孩的妇女）登机时也享有高于其他乘客的优先级。</p>
+<p>优先队列对应到我们生活场景中也有很多例子，例如我们去银行办理业务，一般都会排号先到的先办理，但是呢，还会有 VIP 会员优先办理，又或者去火车站窗口上购票也会有提示军人可以优先办理等等</p>
+<p><strong>实现步骤</strong><br>核心实现继 JavaScript 数组实现队列的例子，对入队函数进行改造如下所示：</p>
+<ul>
+<li>声明 queueElement 对象，包含了要添加到队列的元素</li>
+<li>如果队列为空直接入队</li>
+<li>如果找到一个比 priority 优先级大的元素，插入新元素，这里使用到了 JS 数组中的 splice 方法</li>
+<li>最后如果队列中的所有元素的优先级都小于 priority，则直接在队列尾部入队</li>
+<li>另外打印输出的方法也做了简单修改</li>
+</ul>
+<p>代码示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">PriorityQueue.prototype.enQueue &#x3D; function(element, priority) &#123;</span><br><span class="line">    const queueElement &#x3D; &#123; element, priority &#125;;</span><br><span class="line"></span><br><span class="line">    if (this.isEmpty()) &#123;</span><br><span class="line">        return this.elements.push(queueElement);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    let added &#x3D; false;</span><br><span class="line">    for (let i&#x3D;0; i &lt; this.elements.length; i++) &#123;</span><br><span class="line">        if (priority &lt; this.elements[i][&#39;priority&#39;]) &#123;</span><br><span class="line">            added &#x3D; true;</span><br><span class="line">            this.elements.splice(i, 0, queueElement)</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (!added) &#123;</span><br><span class="line">        this.elements.push(queueElement);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PriorityQueue.prototype.print &#x3D; function() &#123;</span><br><span class="line">    console.log(this.elements.map(item &#x3D;&gt; item.element).join(&#39; | &#39;));</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const queue &#x3D; new PriorityQueue();</span><br><span class="line">queue.enQueue(&#39;普通会员1&#39;, 5);</span><br><span class="line">queue.enQueue(&#39;普通会员2&#39;, 10);</span><br><span class="line">queue.print() &#x2F;&#x2F; 普通会员1 | 普通会员2</span><br><span class="line">queue.enQueue(&#39;VIP会员1&#39;, 3);</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员1 | 普通会员1 | 普通会员2</span><br><span class="line">queue.enQueue(&#39;VIP会员2&#39;, 3);</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员1 | VIP会员2 | 普通会员1 | 普通会员2</span><br><span class="line">queue.deQueue();</span><br><span class="line">queue.print() &#x2F;&#x2F; VIP会员2 | 普通会员1 | 普通会员2</span><br></pre></td></tr></table></figure>
+
+<p><strong>图例展示</strong><br>下面以图例的形式展示以上优先队列程序的运行过程<br><img src="/images/algorithm/queue-priority.png" alt="queue-priority"><br>以上是将优先级最小的元素放置于队列前面，称之为最小优先队列，最大优先队列的实现则反之。源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-priority.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-priority.js</a></p>
+<h3 id="循环队列"><a href="#循环队列" class="headerlink" title="循环队列"></a>循环队列</h3><p>循环队列有些地方也称之为<code>环形队列</code>，其本身是一种环形结构的队列，相较于普通队列有个好处是第一个元素出队之后，剩下元素无需依次向前移位，充分利用了向量空间，在以下介绍中给出了完整的实现过程。</p>
+<p>在设计环形队列时即可顺时针也可逆时针两个方向进行实现，在入队时可根据 (tail % capacity) 规则，进行队尾添加元素，tail 表示队尾的指针，capacity 表示容量，出队同样以（head % capacity）规则操作，head 表示队头指针，下面以长度为 6 的队列进行图文形式说明下实现过程。<br><img src="/images/algorithm/queue-ring.png" alt="queue-ring"></p>
+<p><strong>ES6 实现循环队列</strong><br>以下采用 EcameScript 6 的 Class 写法，实现一个环形队列，需要做哪些点呢？以下列出需要实现的功能点：</p>
+<ul>
+<li>创建队列，初始化队列空间</li>
+<li>检查队列是否为空</li>
+<li>检查队列是否溢出</li>
+<li>入队</li>
+<li>出队</li>
+<li>队列长度</li>
+<li>清空队列</li>
+<li>销毁队列，内存空间也将释放</li>
+<li>队列遍历输出</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">const Init &#x3D; Symbol(&#39;QueueStudy#Init&#39;);</span><br><span class="line"></span><br><span class="line">class QueueStudy &#123;</span><br><span class="line">    constructor (capacity) &#123;</span><br><span class="line">        if (!capacity) &#123;</span><br><span class="line">            throw new Error(&#39;The capacity field is required!&#39;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        this.capacity &#x3D; capacity; &#x2F;&#x2F; 初始化容量</span><br><span class="line">        this[Init]();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 清空队列，内存保留</span><br><span class="line">     *&#x2F;</span><br><span class="line">    clear() &#123;</span><br><span class="line">        this[Init]()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [Init]() &#123;</span><br><span class="line">        this.queue &#x3D; new Array(this.capacity); &#x2F;&#x2F; 初始化队列内存空间</span><br><span class="line">        this.queueLen &#x3D; 0; &#x2F;&#x2F; 初始化队列元素</span><br><span class="line">        this.head &#x3D; 0; &#x2F;&#x2F; 队头</span><br><span class="line">        this.tail &#x3D; 0; &#x2F;&#x2F; 尾部</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列是否为空</span><br><span class="line">     *&#x2F;</span><br><span class="line">    isEmpty() &#123;</span><br><span class="line">        return this.queueLen &#x3D;&#x3D;&#x3D; 0 ? true : false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列是否溢出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    isOverflow() &#123;</span><br><span class="line">        return this.queueLen &#x3D;&#x3D;&#x3D; this.capacity</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 入队</span><br><span class="line">     *&#x2F;</span><br><span class="line">    enQueue(element) &#123;</span><br><span class="line">        if (this.isOverflow()) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        this.queue[this.tail] &#x3D; element;</span><br><span class="line">        this.tail++;</span><br><span class="line">        this.tail &#x3D; this.tail % this.capacity;</span><br><span class="line">        this.queueLen++;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 出队</span><br><span class="line">     *&#x2F;</span><br><span class="line">    deQueue() &#123;</span><br><span class="line">        if (this.isEmpty()) &#123;</span><br><span class="line">            throw new Error(&#39;队列为空&#39;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            const element &#x3D; this.queue[this.head];</span><br><span class="line">            this.head++; &#x2F;&#x2F; 队头位置移动</span><br><span class="line">            this.head &#x3D; this.head % this.capacity;</span><br><span class="line">            this.queueLen--;</span><br><span class="line">            return element;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列长度</span><br><span class="line">     *&#x2F;</span><br><span class="line">    len() &#123;</span><br><span class="line">        return this.queueLen;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 销毁队列，内存回收</span><br><span class="line">     *&#x2F;</span><br><span class="line">    destroy() &#123;</span><br><span class="line">        this.queue &#x3D; null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 队列元素遍历</span><br><span class="line">     *&#x2F;</span><br><span class="line">    traversing() &#123;</span><br><span class="line">        console.log(&#39;------------traversing start------------&#39;);</span><br><span class="line">        </span><br><span class="line">        for (let i&#x3D;this.head; i&lt;this.queueLen + this.head; i++) &#123;</span><br><span class="line">            console.log(this.queue[i % this.capacity]);</span><br><span class="line">        &#125;</span><br><span class="line">        console.log(&#39;------------traversing end------------\n&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">const q1 &#x3D; new QueueStudy(6);</span><br><span class="line"></span><br><span class="line">q1.enQueue(&#39;a&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">q1.enQueue(&#39;b&#39;);</span><br><span class="line">q1.enQueue(&#39;c&#39;);</span><br><span class="line">q1.enQueue(&#39;d&#39;);</span><br><span class="line">q1.enQueue(&#39;e&#39;);</span><br><span class="line">q1.enQueue(&#39;f&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.enQueue(&#39;g&#39;);</span><br><span class="line">q1.traversing();</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.enQueue(&#39;h&#39;);</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">console.log(&#39;出队: &#39;, q1.deQueue());</span><br><span class="line">q1.traversing();</span><br><span class="line">q1.clear();</span><br><span class="line">q1.traversing();</span><br></pre></td></tr></table></figure>
+<p><img src="/images/algorithm/queue-ring-test.png" alt="queue-ring-test"><br>源码参见 <a target="_blank" rel="noopener" href="https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-ring.js">https://github.com/Q-Angelo/project-training/tree/master/algorithm/queue-ring.js</a><br>推荐我在学习数据结构中看的两本书 学习<a target="_blank" rel="noopener" href="https://book.douban.com/subject/27129352/">JavaScript数据结构与算法（第2版）</a>、图解数据结构使用 Python</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/07/nodejs/JavaScript_%E6%89%A9%E5%B1%95%E7%B3%BB%E5%88%97/" class="post-title-link" itemprop="url">JavaScript 扩展系列</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 12:44:24 / Modified: 13:35:49" itemprop="dateCreated datePublished" datetime="2021-03-07T12:44:24+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="正则表达式扩展"><a href="#正则表达式扩展" class="headerlink" title="正则表达式扩展"></a>正则表达式扩展</h3><ul>
+<li>构造函数 ES5声明对象 情况一<blockquote>
+<p>第一个参数是字符; 第二个是修饰符</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let regex &#x3D; new RegExp(&#39;xyz&#39;, &#39;i&#39;);</span><br><span class="line"></span><br><span class="line">console.log(regex.test(&#39;xyz123&#39;), regex.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true</span><br></pre></td></tr></table></figure></li>
+<li>构造函数 ES5声明对象 情况二<blockquote>
+<p>第一个参数是正则表达式; 但是此时不接受第二个参数是一个修饰符，否则会报错</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let regex2 &#x3D; new RegExp(&#x2F;xyz&#x2F;i); &#x2F;&#x2F; 正确</span><br><span class="line">let regex3 &#x3D; new RegExp(&#x2F;xyz&#x2F;i, &#39;i&#39;); &#x2F;&#x2F; 错误；Uncaught TypeError: Cannot supply flags when constructing one RegExp </span><br><span class="line"></span><br><span class="line">console.log(regex2.test(&#39;xyz123&#39;), regex2.test(&#39;xyZ123&#39;)); &#x2F;&#x2F; true true</span><br></pre></td></tr></table></figure></li>
+<li>构造函数 ES6中的声明对象<blockquote>
+<p>ES6改变了此行为，第一个参数是正则表达式，第二个参数也可以在指定修饰符。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let regex3 &#x3D; new RegExp(&#x2F;abc&#x2F;ig, &#39;i&#39;);</span><br><span class="line"></span><br><span class="line">console.log(regex3.flags); &#x2F;&#x2F; i</span><br></pre></td></tr></table></figure>
+以上示例中，原有正则对象的修饰符是ig，它会被第二个参数i覆盖。</li>
+</ul>
+<h3 id="字符串扩展"><a href="#字符串扩展" class="headerlink" title="字符串扩展"></a>字符串扩展</h3><ul>
+<li>Unicode表示法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;a&#39;,&#96;\u0061&#96;); &#x2F;&#x2F;a a</span><br><span class="line">  &#x2F;&#x2F;乱码，因为\u20bb7转换成二进制以大于0xFFFF，会当做两个字符处理</span><br><span class="line">  console.log(&#39;s&#39;,&#96;\u20BB7&#96;); &#x2F;&#x2F;s ₻7</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES6中处理大于0xFFFF这种情况，用大括号&#123;&#125;把这种Unicode编码包括起来</span><br><span class="line">  console.log(&#39;s&#39;,&#96;\u&#123;20BB7&#125;&#96;); &#x2F;&#x2F;s 𠮷</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let s&#x3D;&#39;𠮷&#39;;</span><br><span class="line">  &#x2F;&#x2F;取长度，四个字节为两个字符</span><br><span class="line">  console.log(&#39;length&#39;,s.length); &#x2F;&#x2F;2</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES5中charAt()取字符，charCodeAt()取码值</span><br><span class="line">  console.log(&#39;0&#39;,s.charAt(0)); &#x2F;&#x2F;0 �</span><br><span class="line">  console.log(&#39;1&#39;,s.charAt(1)); &#x2F;&#x2F;1 �</span><br><span class="line">  console.log(&#39;at0&#39;,s.charCodeAt(0)); &#x2F;&#x2F;at0 55362</span><br><span class="line">  console.log(&#39;at1&#39;,s.charCodeAt(1)); &#x2F;&#x2F;at1 57271</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;ES6中codePointAt()取码值，toString(16)转换成16进制</span><br><span class="line">  let s1&#x3D;&#39;𠮷a&#39;;</span><br><span class="line">  console.log(&#39;length&#39;,s1.length);</span><br><span class="line">  console.log(&#39;code0&#39;,s1.codePointAt(0)); &#x2F;&#x2F;code0 134071</span><br><span class="line">  console.log(&#39;code0&#39;,s1.codePointAt(0).toString(16)); &#x2F;&#x2F;code0 20bb7</span><br><span class="line">  console.log(&#39;code1&#39;,s1.codePointAt(1)); &#x2F;&#x2F;code1 57271</span><br><span class="line">  console.log(&#39;code2&#39;,s1.codePointAt(2)); &#x2F;&#x2F;code2 97</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;ES5中fromCharCode()处理大于两个字节，会乱码</span><br><span class="line">  console.log(String.fromCharCode(&quot;0x20bb7&quot;)); &#x2F;&#x2F;ஷ</span><br><span class="line">  &#x2F;&#x2F;ES6中fromCodePoint()处理大于两个字节，正常显示</span><br><span class="line">  console.log(String.fromCodePoint(&quot;0x20bb7&quot;)); &#x2F;&#x2F;𠮷</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>遍历接口<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;字符串遍历器接口</span><br><span class="line">let str&#x3D;&#39;\u&#123;20bb7&#125;abc&#39;;</span><br><span class="line">&#x2F;&#x2F;ES5处理会将&#123;20bb7&#125;按照两个字节处理，造成前一个字符乱码</span><br><span class="line">for(let i&#x3D;0;i&lt;str.length;i++)&#123;</span><br><span class="line">  console.log(&#39;es5&#39;,str[i]);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果:� � a b c</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;ES6使用for of遍历处理，可以自动处理大于0xFFFF这种情况</span><br><span class="line">for(let code of str)&#123;</span><br><span class="line">  console.log(&#39;es6&#39;,code);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;输出结果:𠮷 a b c</span><br></pre></td></tr></table></figure></li>
+<li>模板字符串<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let name &#x3D; &quot;张三&quot;;</span><br><span class="line">  let info &#x3D; &quot;我来自China&quot;;</span><br><span class="line">  let str &#x3D; &#96;I am $&#123;name&#125; , $&#123;info&#125;&#96;;</span><br><span class="line">  console.log(str);</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;row对所有的斜杠进行了转义，原样输出</span><br><span class="line">  console.log(String.raw&#96;Hi\n$&#123;1+2&#125;&#96;);&#x2F;&#x2F;Hi\n3</span><br><span class="line">  console.log(&#96;Hi\n$&#123;1+2&#125;&#96;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>标签模板<blockquote>
+<p>标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的是函数，紧跟在后面的模板字符串就是它的参数。<br>两个作用： 第一在过滤 html 字符串的时候防止 xss 攻击用这个处理，第二可以用于多语言转换</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let user &#x3D; &#123;</span><br><span class="line">    name:&#39;zhangsan&#39;,</span><br><span class="line">    info:&#39;hello world&#39;</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(abc&#96;I am $&#123;user.name&#125;,$&#123;user.info&#125;&#96;);</span><br><span class="line">  function abc(s,v1,v2)&#123;</span><br><span class="line">    console.log(s,v1,v2);</span><br><span class="line">    return s+v1+v2;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>新增方法(10种)<br>padStart()、padEnd() 这两个方法是 ES7 的草案中提案的，在 ES6 中使用，需要安装库<code>npm install babel-polyfill --save-dev</code>打补丁，处理兼容性，在项目中引入 babel-polyfill<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import &#39;babel-polyfill&#39;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  let str&#x3D;&quot;string&quot;;</span><br><span class="line">  &#x2F;&#x2F;includes()判断是否包含某个字符</span><br><span class="line">  console.log(&#39;includes&#39;,str.includes(&quot;c&quot;));</span><br><span class="line">  &#x2F;&#x2F;startsWith()判断是否以某个字符为起始</span><br><span class="line">  console.log(&#39;start&#39;,str.startsWith(&#39;str&#39;));</span><br><span class="line">  &#x2F;&#x2F;endsWith()判断是否以某个字符为结束</span><br><span class="line">  console.log(&#39;end&#39;,str.endsWith(&#39;ng&#39;));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  let str&#x3D;&quot;abc&quot;;</span><br><span class="line">  &#x2F;&#x2F;repeat()使字符串重复多少次</span><br><span class="line">  console.log(str.repeat(3));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F;第一个参数指定要显示的长度，第二个参数表示如果长度不够要添加的字符</span><br><span class="line">  console.log(&#39;1&#39;.padStart(2,&#39;0&#39;)); &#x2F;&#x2F;01</span><br><span class="line">  console.log(&#39;1&#39;.padEnd(2,&#39;0&#39;)); &#x2F;&#x2F;10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="数值扩展"><a href="#数值扩展" class="headerlink" title="数值扩展"></a>数值扩展</h3><ul>
+<li>Number.isInteger()<blockquote>
+<p>判断是否为整数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;25&#39;,Number.isInteger(25)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;25.0&#39;,Number.isInteger(25.0)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;25.1&#39;,Number.isInteger(25.1)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;25.1&#39;,Number.isInteger(&#39;25&#39;)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.isFinite()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;15&#39;,Number.isFinite(15)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;NaN&#39;,Number.isFinite(NaN)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;1&#x2F;0&#39;,Number.isFinite(&#39;true&#39;&#x2F;0)); &#x2F;&#x2F;false</span><br><span class="line">console.log(&#39;NaN&#39;,Number.isNaN(NaN)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;0&#39;,Number.isNaN(0)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.isNaN()<blockquote>
+<p>判断一个值是否为NaN</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;NaN&#39;,Number.isNaN(NaN)); &#x2F;&#x2F;true</span><br><span class="line">console.log(&#39;0&#39;,Number.isNaN(0)); &#x2F;&#x2F;false</span><br></pre></td></tr></table></figure></li>
+<li>Number.MAX_SAFE_INTEGER<blockquote>
+<p>数的最大上限</p>
+</blockquote>
+</li>
+<li>Number.MIN_SAFE_INTEGER<blockquote>
+<p>数的最小下限</p>
+</blockquote>
+</li>
+<li>Number.isSafeInteger()<blockquote>
+<p>判断给的这个数是否在有效范围内<br>注意： ES6中如果一个数不在-2的53方和2的53次方之间就会不准确</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(Number.MAX_SAFE_INTEGER,Number.MIN_SAFE_INTEGER);</span><br><span class="line">  console.log(&#39;10&#39;,Number.isSafeInteger(10));&#x2F;&#x2F;10 true</span><br><span class="line">  console.log(&#39;a&#39;,Number.isSafeInteger(&#39;a&#39;));&#x2F;&#x2F;a false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Math.trunc()<blockquote>
+<p>取整</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">console.log(4.1,Math.trunc(4.1)); &#x2F;&#x2F; 4</span><br><span class="line">console.log(4.9,Math.trunc(4.9)); &#x2F;&#x2F; 4</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Math.sign()<blockquote>
+<p>返回-1,0,1 小于0返回-1，等于0返回0，大于0返回1,注意参数为数值</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;-5&#39;,Math.sign(-5)); &#x2F;&#x2F;-1</span><br><span class="line">console.log(&#39;0&#39;,Math.sign(0)); &#x2F;&#x2F;0</span><br><span class="line">console.log(&#39;5&#39;,Math.sign(5)); &#x2F;&#x2F;1</span><br></pre></td></tr></table></figure></li>
+<li>Math.cbrt()<blockquote>
+<p>返回一个数的立方根</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">console.log(&#39;-1&#39;,Math.cbrt(-1)); &#x2F;&#x2F;-1</span><br><span class="line">console.log(&#39;8&#39;,Math.cbrt(8)); &#x2F;&#x2F;2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="数组扩展"><a href="#数组扩展" class="headerlink" title="数组扩展"></a>数组扩展</h3><ul>
+<li>Array.of()<blockquote>
+<p>把一组<code>数组变量</code>转换成数组类型</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let arr &#x3D; Array.of(3,4,7,9,11);</span><br><span class="line">  console.log(&#39;arr&#x3D;&#39;,arr); &#x2F;&#x2F;arr&#x3D; [3, 4, 7, 9, 11]</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;返回空数组</span><br><span class="line">  let empty&#x3D;Array.of();</span><br><span class="line">  console.log(&#39;empty&#39;,empty); &#x2F;&#x2F;empty []</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Array.from()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&#x2F;&#x2F;第一种用法，传入一个参数</span><br><span class="line">&lt;div id&#x3D;&quot;doc3&quot; class&#x3D;&quot;syy&quot;&gt;</span><br><span class="line">    &lt;p&gt;p1&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;p2&lt;&#x2F;p&gt;</span><br><span class="line">    &lt;p&gt;p3&lt;&#x2F;p&gt;</span><br><span class="line">&lt;&#x2F;div&gt;</span><br><span class="line">&#x2F;&#x2F;获取所有的p标签</span><br><span class="line">let p&#x3D;document.querySelectorAll(&#39;p&#39;);</span><br><span class="line">let pArr&#x3D;Array.from(p);</span><br><span class="line">pArr.forEach(function(item)&#123;</span><br><span class="line">  &#x2F;&#x2F;textContent是ES5的一个原生方法，获取文本</span><br><span class="line">  console.log(item.textContent);</span><br><span class="line">&#125;);</span><br><span class="line">&#x2F;&#x2F;输出 p1 p2 p3</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;第二种用法传入两个参数,第二个参数类似于map映射</span><br><span class="line">console.log(Array.from([1,3,5],function(item)&#123;return item*2&#125;)); &#x2F;&#x2F;[2, 6, 10]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>fill()<blockquote>
+<p>填充,只写一个参数全部替换，三个参数情况下：第一个参数是替换内容，第二个参数是起始位置，第三个参数是结束位置</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;fill-7&#39;,[1,&#39;a&#39;,undefined].fill(7)); &#x2F;&#x2F;[7, 7, 7]</span><br><span class="line">  console.log(&#39;fill,pos&#39;,[&#39;a&#39;,&#39;b&#39;,&#39;c&#39;].fill(7,1,3));&#x2F;&#x2F;[&quot;a&quot;, 7, 7]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>keys()<blockquote>
+<p>获取索引</p>
+</blockquote>
+</li>
+<li>values()<blockquote>
+<p>获取值，是ES7中的一个提案，存在浏览器兼容性需要加载 import ‘babel-polyfill’;</p>
+</blockquote>
+</li>
+<li>entries()<blockquote>
+<p>既获取索引又获取值</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">for(let index of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].keys())&#123;</span><br><span class="line">  console.log(&#39;keys&#39;,index); &#x2F;&#x2F; 0 1 2</span><br><span class="line">&#125;</span><br><span class="line">for(let value of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].values())&#123;</span><br><span class="line">  console.log(&#39;values&#39;,value); &#x2F;&#x2F;1 c ks</span><br><span class="line">&#125;</span><br><span class="line">for(let [index,value] of [&#39;1&#39;,&#39;c&#39;,&#39;ks&#39;].entries())&#123;</span><br><span class="line">  console.log(&#39;values&#39;,index,value); &#x2F;&#x2F;0 1 1 c 2 ks</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>copyWithin(target,start,end)</li>
+</ul>
+<ul>
+<li>target(必须)：从该位置开始替换数据</li>
+<li>start(可选)：从该位置开始读取数据，默认为0</li>
+<li>end(可选)：到该位置前停止读取数据，默认等于数组长度<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log([1,2,3,4,5].copyWithin(0,3,4)); &#x2F;&#x2F;[4, 2, 3, 4, 5]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>find(fn)<blockquote>
+<p>查找符合条件的第一个元素,查找不到时返回undefined</p>
+</blockquote>
+</li>
+<li>findIndex(fn)<blockquote>
+<p>查找符合条件的第一个元素的下标值，查找不到时返回-1</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log([1,2,3,4,5,6].find(function(item)&#123;return item&gt;3&#125;)); &#x2F;&#x2F;4</span><br><span class="line">  console.log([1,2,3,4,5,6].findIndex(function(item)&#123;return item&gt;3&#125;)); &#x2F;&#x2F;3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>展开运算符…<blockquote>
+<p>数组拼接使用展开运算符可以取代concat的位置</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const a &#x3D; [&#39;a&#39;, &#39;b&#39;];</span><br><span class="line">const b &#x3D; [&#39;c&#39;, &#39;d&#39;]</span><br><span class="line">const c &#x3D; [...a, ...b];</span><br><span class="line"></span><br><span class="line">console.log(c); &#x2F;&#x2F;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;使用concat</span><br><span class="line">const d &#x3D; a.concat(b)</span><br><span class="line">console.log(d); &#x2F;&#x2F;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="函数扩展"><a href="#函数扩展" class="headerlink" title="函数扩展"></a>函数扩展</h3><ul>
+<li>参数默认值<blockquote>
+<p>注意： 默认值后面不能跟没有默认值得变量，如(x, y = ‘world’,c)c没有默认值错误</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  function test(x, y &#x3D; &#39;world&#39;)&#123;</span><br><span class="line">    console.log(&#39;默认值&#39;,x,y);</span><br><span class="line">  &#125;</span><br><span class="line">  test(&#39;hello&#39;); &#x2F;&#x2F;默认值 hello world</span><br><span class="line">  test(&#39;hello&#39;,&#39;China&#39;); &#x2F;&#x2F;默认值 hello China</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>作用域问题<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">let x&#x3D;&#39;test&#39;;</span><br><span class="line">function test2(x,y&#x3D;x)&#123;</span><br><span class="line">  console.log(&#39;作用域&#39;,x,y);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;参数中第一个x没有值</span><br><span class="line">test2(); &#x2F;&#x2F;作用域 undefined undefined</span><br><span class="line">test2(&#39;kill&#39;); &#x2F;&#x2F;作用域 kill kill</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;x为上面let定义的x</span><br><span class="line">function test3(z,y&#x3D;x)&#123;</span><br><span class="line">  console.log(&#39;作用域&#39;,z,y);</span><br><span class="line">&#125;</span><br><span class="line">test3(&#39;kill&#39;); &#x2F;&#x2F;作用域 kill test</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>rest参数<blockquote>
+<p>rest参数就是在你不确定有多少个参数的时候，把你输入的一系列参数转换成了数组</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">function test3(...arg)&#123;</span><br><span class="line">  for(let v of arg)&#123;</span><br><span class="line">    console.log(v);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">test3(1,2,3,4,&#39;a&#39;); &#x2F;&#x2F; 1 3 4 5 a</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>扩展运算符<blockquote>
+<p>ES6的扩展运算符则可以看作是rest参数的逆运算。可以将数组转化为参数列表</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&#x2F;&#x2F; 把一个数组拆分成离散的值</span><br><span class="line">console.log(...[1,2,4]); &#x2F;&#x2F;1 2 4</span><br><span class="line">console.log(&#39;a&#39;,...[1,2,4]); &#x2F;&#x2F;a 1 2 4</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>箭头函数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">let arrow &#x3D; v &#x3D;&gt; v*2;</span><br><span class="line">let arrow2 &#x3D; () &#x3D;&gt; 5;</span><br><span class="line">console.log(&#39;arrow&#39;,arrow(3)); &#x2F;&#x2F;6</span><br><span class="line">console.log(arrow2()); &#x2F;&#x2F;5</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>尾调用<blockquote>
+<p>尾调用存在于函数式编程概念里，函数的最后是不是是一个函数，可以用来提升性能，如果在性能优化过程中，是不断的嵌套其他函数，或者说这个函数依赖于另一个函数的操作，建议用尾调用的形式。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  function tail(x)&#123;</span><br><span class="line">    console.log(&#39;tail&#39;,x);</span><br><span class="line">  &#125;</span><br><span class="line">  function fx(x)&#123;</span><br><span class="line">    return tail(x)</span><br><span class="line">  &#125;</span><br><span class="line">  fx(123) &#x2F;&#x2F;tail 123</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="对象扩展"><a href="#对象扩展" class="headerlink" title="对象扩展"></a>对象扩展</h3><ul>
+<li>简洁表示法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let o&#x3D;1;</span><br><span class="line">  let k&#x3D;2;</span><br><span class="line">  &#x2F;&#x2F;es5属性定义</span><br><span class="line">  let es5&#x3D;&#123;</span><br><span class="line">    o:o,</span><br><span class="line">    k:k</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6属性定义</span><br><span class="line">  let es6&#x3D;&#123;</span><br><span class="line">    o,</span><br><span class="line">    k</span><br><span class="line">  &#125;;</span><br><span class="line">  console.log(es5,es6);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;es5定义方法</span><br><span class="line">  let es5_method&#x3D;&#123;</span><br><span class="line">    hello:function()&#123;</span><br><span class="line">      console.log(&#39;hello&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6定义方法，更简洁</span><br><span class="line">  let es6_method&#x3D;&#123;</span><br><span class="line">    hello()&#123;</span><br><span class="line">      console.log(&#39;hello&#39;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  console.log(es5_method.hello(),es6_method.hello());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>属性表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F; 属性表达式</span><br><span class="line">  let a&#x3D;&#39;b&#39;;</span><br><span class="line">  &#x2F;&#x2F;es5中key是固定的</span><br><span class="line">  let es5_obj&#x3D;&#123;</span><br><span class="line">    a:&#39;c&#39;,</span><br><span class="line">    b:&#39;c&#39;</span><br><span class="line">  &#125;;</span><br><span class="line">  &#x2F;&#x2F;es6中可以使用变量，这块相当于b</span><br><span class="line">  let es6_obj&#x3D;&#123;</span><br><span class="line">    [a]:&#39;c&#39;</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(es5_obj,es6_obj);</span><br><span class="line">  &#x2F;&#x2F;输出 Object &#123;a: &quot;c&quot;, b: &quot;c&quot;&#125; Object &#123;b: &quot;c&quot;&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.is()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  console.log(&#39;字符串&#39;,Object.is(&#39;abc&#39;,&#39;abc&#39;),&#39;abc&#39;&#x3D;&#x3D;&#x3D;&#39;abc&#39;); &#x2F;&#x2F;字符串 true true</span><br><span class="line">  &#x2F;&#x2F; 数组是引用类型，虽然以下是两个空数组，在值上都是空，但这两个数组引用的是不同的地址，因此在严格意义上来讲，他两个不是完全相等的</span><br><span class="line">  console.log(&#39;数组&#39;,Object.is([],[]),[]&#x3D;&#x3D;&#x3D;[]); &#x2F;&#x2F;数组 false false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.assign()<blockquote>
+<p>拷贝函数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;拷贝&#39;,Object.assign(&#123;a:&#39;a&#39;&#125;,&#123;b:&#39;b&#39;&#125;));</span><br><span class="line">&#x2F;&#x2F;拷贝 Object &#123;a: &quot;a&quot;, b: &quot;b&quot;&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.entries()<blockquote>
+<p>遍历</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let test&#x3D;&#123;k:123,o:456&#125;;</span><br><span class="line">for(let [key,value] of Object.entries(test))&#123;</span><br><span class="line">console.log([key,value]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>Object.keys()<blockquote>
+<p>对数组排序</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var anObj &#x3D; &#123; 100: &#39;a&#39;, 2: &#39;b&#39;, 7: &#39;c&#39; &#125;;</span><br><span class="line">console.log(Object.keys(anObj).sort( (x,y) &#x3D;&gt; x &gt; y));</span><br></pre></td></tr></table></figure></li>
+<li>对象扩展拷贝<blockquote>
+<p>node v8.5.0版本支持</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const a &#x3D; &#123;&quot;name&quot;: &quot;zhangsan&quot;&#125;</span><br><span class="line">const b &#x3D; &#123;&quot;age&quot;: 8, &quot;email&quot;: &quot;XXX@qq.com&quot;&#125;</span><br><span class="line">console.log(&#123;...a, ...b, &quot;type&quot;: &quot;儿童&quot;&#125;);</span><br><span class="line">&#x2F;&#x2F; &#123;name: &quot;zhangsan&quot;, age: 18, email: &quot;XXX@qq.com&quot;, type: &quot;成人&quot;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/07/nodejs/JavaScript_Promise/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/07/nodejs/JavaScript_Promise/" class="post-title-link" itemprop="url">Promise</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-07 00:09:38 / Modified: 12:39:06" itemprop="dateCreated datePublished" datetime="2021-03-07T00:09:38+08:00">2021-03-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><blockquote>
+<p>在JavaScript的世界中，所有代码都是单线程执行的。为了使程序不阻塞执行有了异步（I/O操作、事件操作），但是异步也有其不好之处，例如：异步回调callback回调地狱的问题，伴随着这些问题有了解决方案Promise。<br>面试指南</p>
+</blockquote>
+<ul>
+<li>Promise 中 .then 的第二参数与 .catch 有什么区别?，参考：错误捕获</li>
+<li>怎么让一个函数无论promise对象成功和失败都能被调用？，参考：finally</li>
+</ul>
+<h3 id="promise的基本使用和原理"><a href="#promise的基本使用和原理" class="headerlink" title="promise的基本使用和原理"></a>promise的基本使用和原理</h3><ol>
+<li>如何异常捕获（Error、reject）通过catch捕获</li>
+<li>多个串联-链式执行的好处</li>
+<li>Promise.all和Promise.race</li>
+<li>Promise标准-状态变化（Pending —— Fulfilled/Rejected）</li>
+<li>then函数，不明文指定返回实例，返回本身的promise实例，否则返回指定的promise实例</li>
+</ol>
+<h3 id="callback方式书写"><a href="#callback方式书写" class="headerlink" title="callback方式书写"></a>callback方式书写</h3><blockquote>
+<p>回调函数方式书写，如果异步请求多了，将会很难维护，程序看着很乱，最终会导致回调地狱。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function(callback)&#123;</span><br><span class="line">    console.log(&#39;执行&#39;);</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">      callback &amp;&amp; callback()</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax(function()&#123;</span><br><span class="line">    console.log(&#39;执行 ajax方法&#39;);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="promise方式书写"><a href="#promise方式书写" class="headerlink" title="promise方式书写"></a>promise方式书写</h3><ul>
+<li><strong>resove</strong>：执行下一步操作</li>
+<li><strong>reject</strong>：中断当前操作</li>
+<li><strong>then</strong>：是Promise返回的对象，执行下一个，如果有两个函数，第一个表示resolved(已成功),第二个表示rejected(已失败)<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let ajax &#x3D; function()&#123;</span><br><span class="line">  console.log(&#39;promise&#39;,&#39;执行&#39;);</span><br><span class="line">  return new Promise(function(resolve,reject)&#123;</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">      resolve()</span><br><span class="line">    &#125;,1000);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ajax().then(function()&#123;</span><br><span class="line">  console.log(&#39;promise&#39;,&#39;执行ajax方法&#39;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ul>
+<li>执行两个Promise的效果<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise&#39;,&#39;执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        resolve()</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      return new Promise(function(resolve,reject)&#123;</span><br><span class="line">        setTimeout(function()&#123;</span><br><span class="line">          resolve();</span><br><span class="line">        &#125;,1000);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;promise3&#39;,&#39;执行3&#39;);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>多个Promise实例实现串行操作<blockquote>
+<p>执行a b c d 如果中间出了错误使用catch来捕获</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  let ajax &#x3D; function(num)&#123;</span><br><span class="line">    console.log(&#39;执行4&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      if (num &gt; 5) &#123;</span><br><span class="line">        resolve();</span><br><span class="line">      &#125;else&#123;</span><br><span class="line">        throw new Error(&#39;出错了&#39;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ajax(6).then(function()&#123;</span><br><span class="line">    console.log(&#39;log&#39;,&#39;6&#39;);</span><br><span class="line">  &#125;).catch(function(err)&#123;</span><br><span class="line">    console.log(&#39;catch&#39;,err);</span><br><span class="line">  &#125;);</span><br><span class="line">  ajax(3).then(function()&#123;</span><br><span class="line">    console.log(&#39;log&#39;,&#39;3&#39;);</span><br><span class="line">  &#125;).catch(function(err)&#123;</span><br><span class="line">    console.log(&#39;catch&#39;,&#39;err&#39;);</span><br><span class="line">  &#125;);</span><br><span class="line">  &#x2F;&#x2F; 输出：</span><br><span class="line">  &#x2F;&#x2F; 执行4</span><br><span class="line">  &#x2F;&#x2F; 执行4</span><br><span class="line">  &#x2F;&#x2F; log 6</span><br><span class="line">  &#x2F;&#x2F; catch err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h3><blockquote>
+<p>finally() 方法返回一个Promise，在promise执行结束时，无论结果是fulfilled或者是rejected，在执行then()和catch()后，都会执行finally指定的回调函数。这为指定执行完promise后，无论结果是fulfilled还是rejected都需要执行的代码提供了一种方式，避免同样的语句需要在then()和catch()中各写一次的情况。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Promise.resolve(&#39;success&#39;).then(result &#x3D;&gt; &#123;</span><br><span class="line">  console.log(&#39;then: &#39;, result)</span><br><span class="line"></span><br><span class="line">  return Promise.resolve(result);</span><br><span class="line">&#125;).catch(err &#x3D;&gt; &#123;</span><br><span class="line">  console.error(&#39;catch: &#39;, err);</span><br><span class="line"></span><br><span class="line">  return Promise.reject(err);</span><br><span class="line">&#125;).finally(result &#x3D;&gt; &#123;</span><br><span class="line">  console.info(&#39;finally: &#39;, result);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; then:  success</span><br><span class="line">&#x2F;&#x2F; finally:  undefined</span><br><span class="line">&#x2F;&#x2F; Promise &#123;&lt;resolved&gt;: &quot;success&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="promise并行执行"><a href="#promise并行执行" class="headerlink" title="promise并行执行"></a>promise并行执行</h3><ul>
+<li>Promise.all()<blockquote>
+<p>Promise.all是将多个Promise实例当成一个Promise实例，all方法里是一个数组，数组传进来多个Promise实例，当多个Promise实例状态发生改变的时候，这个新的Promise实例才会发生变化。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;所有图片加载完在添加到页面上</span><br><span class="line">function loadImg(src)&#123;</span><br><span class="line">  return new Promise((resolve,reject) &#x3D;&gt; &#123;</span><br><span class="line">    let img &#x3D; document.createElement(&#39;img&#39;);</span><br><span class="line">    img.src &#x3D; src;</span><br><span class="line">    img.onload &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">      resolve(img);</span><br><span class="line">    &#125;</span><br><span class="line">    img.onerror &#x3D; (err) &#x3D;&gt; &#123;</span><br><span class="line">      reject(err)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function showImgs(imgs)&#123;</span><br><span class="line">  imgs.forEach(function(img)&#123;</span><br><span class="line">    document.body.appendChild(img)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 每个loadImg()方法都是一个Promise实例只有当三个都发生该变化，才会执行新的Promise实例既Promise.all()</span><br><span class="line">Promise.all([</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170512190539489.jpeg&#39;),</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170225143135972.jpg&#39;),</span><br><span class="line">  loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170217225453679.jpg&#39;)</span><br><span class="line">]).then(showImgs)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="promise率先执行"><a href="#promise率先执行" class="headerlink" title="promise率先执行"></a>promise率先执行</h3><ul>
+<li>Promise.race只要其中一个实例率先发生改变，Promise.race实例也将发生改变，其他的将不在响应。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &#x2F;&#x2F; 有一个图片加载完就添加到页面上</span><br><span class="line">  function loadImg(src)&#123;</span><br><span class="line">    return new Promise((resolve,reject) &#x3D;&gt; &#123;</span><br><span class="line">      let img &#x3D; document.createElement(&#39;img&#39;);</span><br><span class="line">      img.src &#x3D; src;</span><br><span class="line">      img.onload &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">        resolve(img);</span><br><span class="line">      &#125;</span><br><span class="line">      img.onerror &#x3D; (err) &#x3D;&gt; &#123;</span><br><span class="line">        reject(err)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  function showImgs(img)&#123;</span><br><span class="line">    let p &#x3D; document.createElement(&#39;p&#39;);</span><br><span class="line">    p.appendChild(img);</span><br><span class="line">    document.body.appendChild(p);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Promise.race([</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170512190539489.jpeg&#39;),</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170225143135972.jpg&#39;),</span><br><span class="line">    loadImg(&#39;http:&#x2F;&#x2F;www.qzfweb.com&#x2F;uploads&#x2F;20170217225453679.jpg&#39;)</span><br><span class="line">  ]).then(showImgs)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="错误捕获"><a href="#错误捕获" class="headerlink" title="错误捕获"></a>错误捕获</h3><blockquote>
+<p>Promise.then第二个参数与catch捕获错误的区别?</p>
+</blockquote>
+<ul>
+<li>.then第二参数捕获错误<blockquote>
+<p>.then第二个回调参数捕获错误具有就近的原则，不会影响后续then的进行。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  const ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise开始执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        reject(&#96;There&#39;s a mistake&#96;);</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then1&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.resolve();</span><br><span class="line">    &#125;, err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;then1里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then2&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.reject(&#96;There&#39;s a then mistake&#96;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;catch里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 输出</span><br><span class="line">  &#x2F;&#x2F; promise开始执行</span><br><span class="line">  &#x2F;&#x2F; then1里面捕获的err:  There&#39;s a mistake</span><br><span class="line">  &#x2F;&#x2F; then2</span><br><span class="line">  &#x2F;&#x2F; catch里面捕获的err:  There&#39;s a then mistake</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>catch捕获错误<blockquote>
+<p>Promise抛错具有冒泡机制，能够不断传递，可以使用catch统一处理，下面代码中不会输出then1 then2会跳过，直接执行catch处理错误</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  const ajax &#x3D; function()&#123;</span><br><span class="line">    console.log(&#39;promise开始执行&#39;);</span><br><span class="line">    return new Promise(function(resolve,reject)&#123;</span><br><span class="line">      setTimeout(function()&#123;</span><br><span class="line">        reject(&#96;There&#39;s a mistake&#96;);</span><br><span class="line">      &#125;,1000);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ajax()</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then1&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.resolve();</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(function()&#123;</span><br><span class="line">      console.log(&#39;then2&#39;);</span><br><span class="line"></span><br><span class="line">      return Promise.reject(&#96;There&#39;s a then mistake&#96;);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(err &#x3D;&gt; &#123;</span><br><span class="line">      console.log(&#39;catch里面捕获的err: &#39;, err);</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; 输出</span><br><span class="line">  &#x2F;&#x2F; promise开始执行</span><br><span class="line">  &#x2F;&#x2F; catch里面捕获的err:  There&#39;s a then mistake</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+总结： 不论是Promise还是async/await在写法上解决了异步回调的问题，但是任何写法都不会改变JS单线程、异步的本质，除非js执行引擎发生变化。</li>
+</ul>
+<h3 id="手写-Promise-代码"><a href="#手写-Promise-代码" class="headerlink" title="手写 Promise 代码"></a>手写 Promise 代码</h3><p>这是一个经典的面试问题了，我将它放了最后，不废话直接上代码，共分为 5 部份完成，实现思路如下，理清了 Promise 的实现原理，很多问题自然就迎刃而解了。</p>
+<ol>
+<li>声明 MayJunPromise 类<br>主要在构造函数里做一些初始化操作</li>
+</ol>
+<ul>
+<li>行 {1} 初始化一些默认值，Promise 的状态、成功时的 value、失败时的原因</li>
+<li>行 {2} onResolvedCallbacks 用于一些异步处理 const p = new Promise(resolve =&gt; { setTimeout(function(){ resolve(1) }, 5000) })，当 resolve 在 setTimeout 里时，我们调用 p.then() 此时的状态为 pending，因此我们需要一个地方来保存，此处就是用于保存 Promise resolve 时的回调函数集合</li>
+<li>行 {3} onRejectedCallbacks 与行 {2} 同理，保存 Promise reject 回调函数集合</li>
+<li>行 {4} 成功时回调，先进行状态判断是不可逆的，如果 status = pending 修改状态和成功时的 value</li>
+<li>行 {5} 失败时回调，与上面行 {4} 同理，例如 resolve(1); reject(‘err’); 第二个 reject 就无法覆盖</li>
+<li>行 {6} 自执行</li>
+<li>行 {7} 运行失败错误捕获</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 封装一个自己的 Promise</span><br><span class="line"> *&#x2F;</span><br><span class="line">class MayJunPromise &#123;</span><br><span class="line">  constructor(fn) &#123;</span><br><span class="line">    &#x2F;&#x2F; &#123;1&#125; 初始化一些默认值</span><br><span class="line">    this.status &#x3D; &#39;pending&#39;; &#x2F;&#x2F; 一个 promise 有且只有一个状态 (pending | fulfilled | rejected)</span><br><span class="line">    this.value &#x3D; undefined; &#x2F;&#x2F; 一个 JavaScript 合法值（包括 undefined，thenable，promise）</span><br><span class="line">    this.reason &#x3D; undefined; &#x2F;&#x2F; 是一个表明 promise 失败的原因的值</span><br><span class="line">    this.onResolvedCallbacks &#x3D; []; &#x2F;&#x2F; &#123;2&#125;</span><br><span class="line">    this.onRejectedCallbacks &#x3D; []; &#x2F;&#x2F; &#123;3&#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; &#123;4&#125; 成功回调</span><br><span class="line">    let resolve &#x3D; value &#x3D;&gt; &#123;</span><br><span class="line">      if (this.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123;</span><br><span class="line">        this.status &#x3D; &#39;fulfilled&#39;; &#x2F;&#x2F; 终态</span><br><span class="line">        this.value &#x3D; value; &#x2F;&#x2F; 终值</span><br><span class="line">        this.onResolvedCallbacks.forEach(itemFn &#x3D;&gt; &#123;</span><br><span class="line">          itemFn()</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; &#123;5&#125; 失败回调</span><br><span class="line">    let reject &#x3D; reason &#x3D;&gt; &#123;</span><br><span class="line">      if (this.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123; &#x2F;&#x2F; 状态不可逆，例如 resolve(1);reject(&#39;err&#39;); 第二个 reject 就无法覆盖</span><br><span class="line">        this.status &#x3D; &#39;rejected&#39;; &#x2F;&#x2F; 终态</span><br><span class="line">        this.reason &#x3D; reason; &#x2F;&#x2F; 终值</span><br><span class="line">        this.onRejectedCallbacks.forEach(itemFn &#x3D;&gt; itemFn());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    try &#123;</span><br><span class="line">      &#x2F;&#x2F; &#123;6&#125; 自执行</span><br><span class="line">      fn(resolve, reject);</span><br><span class="line">    &#125; catch(err) &#123;</span><br><span class="line">      reject(err); &#x2F;&#x2F; &#123;7&#125; 失败时捕获</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>Then 方法</li>
+</ol>
+<ul>
+<li><p>一个 promise 必须提供一个 then 方法以访问其当前值、终值和据因</p>
+</li>
+<li><p>行 {8} onFulfilled、onRejected 这两个参数可选，由于 Promise .then 是可以链式调用的，对于值穿透的场景要做判断，如果不传，则返回一个函数，也就是将上个结果进行传递</p>
+</li>
+<li><p>行 {9} then 方法必须返回一个 promise 对象</p>
+</li>
+<li><p>行 {10}、{11} 、{12} 也是 then 方法内实现的三种情况，相类似，次数只拿状态等于 fulfilled 进行说明</p>
+</li>
+<li><p>行 {10.1}  Promise/A+ 规范定义：要确保 onFulfilled、onRejected 在下一轮事件循环中被调用，你可以使用 setTimeout 来实现，因为我这里是在 Node.js 环境下，因此推荐使用了 setImmediate 来注册事件（因为可以避免掉 setTimeout 的延迟）</p>
+</li>
+<li><p>行  {10.2} Promise/A+ 标准规定：如果 onFulfilled 或 onRejected 返回的是一个 x，那么它会以 [[Resolve]](promise2, x) 处理解析，我们定义解析的函数 resolveMayJunPromise，也是一个核心函数，下面进行讲解 ```javascript /**</p>
+</li>
+<li><p>封装一个自己的 Promise</p>
+</li>
+<li><p>/ class MayJunPromise { …</p>
+</li>
+</ul>
+<ul>
+<li><p>一个 promise 必须提供一个 then 方法以访问其当前值、终值和据因</p>
+</li>
+<li><p>@param { Function } onFulfilled 可选，如果是一个函数一定是在状态为 fulfilled 后调用，并接受一个参数 value</p>
+</li>
+<li><p>@param { Function } onRejected 可选，如果是一个函数一定是在状态为 rejected 后调用，并接受一个参数 reason</p>
+</li>
+<li><p>@returns { Promise } 返回值必须为 Promise</p>
+</li>
+<li><p>/ then(onFulfilled, onRejected) { // {8} 值穿透，把 then 的默认值向后传递，因为标准规定 onFulfilled、onRejected 是可选参数 // 场景：new Promise(resolve =&gt; resolve(1)).then().then(value =&gt; console.log(value)); onFulfilled = Object.prototype.toString.call(onFulfilled) === ‘[object Function]’ ? onFulfilled : function(value) {return value}; onRejected = Object.prototype.toString.call(onRejected) === ‘[object Function]’ ? onRejected : function(reason) {throw reason};</p>
+<p>// {9} then 方法必须返回一个 promise 对象 const promise2 = new MayJunPromise((resolve, reject) =&gt; { // {10} if (this.status === ‘fulfilled’) { // 这里的 this 会继承外层上下文绑定的 this<br>// {10.1} Promise/A+ 规定：确保 onFulfilled、onRejected 在下一轮事件循环中被调用<br>// 可以使用宏任务 (setTimeout、setImmediate) 或微任务（MutationObsever、process.nextTick）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    &#x2F;&#x2F; &#123;10.2&#125; Promise&#x2F;A+ 标准规定：如果 onFulfilled 或 onRejected 返回的是一个 x，那么它会以 [[Resolve]](promise2, x) 处理解析</span><br><span class="line">    const x &#x3D; onFulfilled(this.value);</span><br><span class="line">    &#x2F;&#x2F; 这里定义解析 x 的函数为 resolveMayJunPromise</span><br><span class="line">    resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    reject(e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>}<br>// {11} if (this.status === ‘rejected’) {</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    const x &#x3D; onRejected(this.reason)</span><br><span class="line">    resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    reject(e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>}<br>// {12} // 有些情况无法及时获取到状态，初始值仍是 pending，例如： // return new Promise(resolve =&gt; { setTimeout(function() { resolve(1) }, 5000) }) // .then(result =&gt; { console.log(result) }) if (this.status === ‘pending’) {</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">this.onResolvedCallbacks.push(() &#x3D;&gt; &#123;</span><br><span class="line">  setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      const x &#x3D; onFulfilled(this.value);</span><br><span class="line">      resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">this.onRejectedCallbacks.push(() &#x3D;&gt; &#123;</span><br><span class="line">  setImmediate(() &#x3D;&gt; &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      const x &#x3D; onRejected(this.reason)</span><br><span class="line">      resolveMayJunPromise(promise2, x, resolve, reject);</span><br><span class="line">    &#125; catch (e) &#123;</span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>} });<br>return promise2; } }</p>
+</li>
+</ul>
+<ol start="3">
+<li>Promise 解决过程<br>声明函数 resolveMayJunPromise()，<code>Promise 解决过程</code>是一个抽象的操作，在这里可以做到与系统的 Promise 或一些遵循 Promise/A+ 规范的 Promise 实现相互交互，以下代码建议跟随 Promise/A+ 规范进行阅读，规范上面也写的很清楚。</li>
+</ol>
+<p>注意：在实际编码测试过程中规范 [2.3.2] 样写还是有点问题，你要根据其它的 Promise 的状态值进行判断，此处注释掉了，建议使用  [2.3.3] 也是可以兼容的 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Promise 解决过程</span><br><span class="line"> * @param &#123; Promise &#125; promise2 </span><br><span class="line"> * @param &#123; any &#125; x </span><br><span class="line"> * @param &#123; Function &#125; resolve </span><br><span class="line"> * @param &#123; Function &#125; reject </span><br><span class="line"> *&#x2F;</span><br><span class="line">function resolveMayJunPromise(promise2, x, resolve, reject)&#123;</span><br><span class="line">  &#x2F;&#x2F; [2.3.1] promise 和 x 不能指向同一对象，以 TypeError 为据因拒绝执行 promise，例如：</span><br><span class="line">  &#x2F;&#x2F; let p &#x3D; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F; let p2 &#x3D; p.then(() &#x3D;&gt; p2); &#x2F;&#x2F; 如果不做判断，这样将会陷入死循环</span><br><span class="line">  if (promise2 &#x3D;&#x3D;&#x3D; x) &#123;</span><br><span class="line">    return reject(new TypeError(&#39;Chaining cycle detected for promise&#39;));</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  &#x2F;&#x2F; [2.3.2] 判断 x 是一个 Promise 实例，可以能使来自系统的 Promise 实例，要兼容，例如：</span><br><span class="line">  &#x2F;&#x2F; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F;        .then(() &#x3D;&gt; new Promise( resolve &#x3D;&gt; resolve(2)))</span><br><span class="line">  &#x2F;&#x2F; 这一块发现也无需，因为 [2.3.3] 已经包含了</span><br><span class="line">  &#x2F;&#x2F; if (x instanceof Promise) &#123;</span><br><span class="line">  &#x2F;&#x2F;     &#x2F;&#x2F; [2.3.2.1] 如果 x 是 pending 状态，那么保留它（递归执行这个 resolveMayJunPromise 处理程序）</span><br><span class="line">  &#x2F;&#x2F;     &#x2F;&#x2F; 直到 pending 状态转为 fulfilled 或 rejected 状态</span><br><span class="line">  &#x2F;&#x2F;     if (x.status &#x3D;&#x3D;&#x3D; &#39;pending&#39;) &#123;</span><br><span class="line">  &#x2F;&#x2F;         x.then(y &#x3D;&gt; &#123;</span><br><span class="line">  &#x2F;&#x2F;             resolveMayJunPromise(promise2, y, resolve, reject);</span><br><span class="line">  &#x2F;&#x2F;         &#125;, reject)</span><br><span class="line">  &#x2F;&#x2F;     &#125; else if (x.status &#x3D;&#x3D;&#x3D; &#39;fulfilled&#39;) &#123; &#x2F;&#x2F; [2.3.2.2] 如果 x 处于执行态，resolve 它</span><br><span class="line">  &#x2F;&#x2F;         x.then(resolve); </span><br><span class="line">  &#x2F;&#x2F;     &#125; else if (x.status &#x3D;&#x3D;&#x3D; &#39;rejected&#39;) &#123; &#x2F;&#x2F; [2.3.2.3] 如果 x 处于拒绝态，reject 它</span><br><span class="line">  &#x2F;&#x2F;         x.then(reject);</span><br><span class="line">  &#x2F;&#x2F;     &#125;</span><br><span class="line">  &#x2F;&#x2F;     return;</span><br><span class="line">  &#x2F;&#x2F; &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; [2.3.3] x 为对象或函数，这里可以兼容系统的 Promise</span><br><span class="line">  &#x2F;&#x2F; new MayJunPromise(resolve &#x3D;&gt; resolve(1))</span><br><span class="line">  &#x2F;&#x2F;        .then(() &#x3D;&gt; new Promise( resolve &#x3D;&gt; resolve(2)))</span><br><span class="line">  if (x !&#x3D; null &amp;&amp; (x instanceof Promise || typeof x &#x3D;&#x3D;&#x3D; &#39;object&#39; || typeof x &#x3D;&#x3D;&#x3D; &#39;function&#39;)) &#123;</span><br><span class="line">    let called &#x3D; false;</span><br><span class="line">    try &#123;</span><br><span class="line">      &#x2F;&#x2F; [2.3.3.1] 把 x.then 赋值给 then</span><br><span class="line">      &#x2F;&#x2F; 存储了一个指向 x.then 的引用，以避免多次访问 x.then 属性，这种预防措施确保了该属性的一致性，因为其值可能在检索调用时被改变。</span><br><span class="line">      const then &#x3D; x.then;</span><br><span class="line"></span><br><span class="line">      &#x2F;&#x2F; [2.3.3.3] 如果 then 是函数（默认为是一个 promise），将 x 作为函数的作用域 this 调用之。</span><br><span class="line">      &#x2F;&#x2F; 传递两个回调函数作为参数，第一个参数叫做 resolvePromise (成功回调) ，第二个参数叫做 rejectPromise（失败回调）</span><br><span class="line">      if (typeof then &#x3D;&#x3D;&#x3D; &#39;function&#39;) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; then.call(x, resolvePromise, rejectPromise) 等价于 x.then(resolvePromise, rejectPromise)，笔者理解此时会调用到 x 即 MayJunPromise 我们自己封装的 then 方法上</span><br><span class="line">        then.call(x, y &#x3D;&gt; &#123; &#x2F;&#x2F; [2.3.3.3.1] 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)</span><br><span class="line">            if (called) return;</span><br><span class="line">            called &#x3D; true;</span><br><span class="line">            resolveMayJunPromise(promise2, y, resolve, reject);</span><br><span class="line">        &#125;, e &#x3D;&gt; &#123; &#x2F;&#x2F; [2.3.3.3.2] 如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise</span><br><span class="line">          if (called) return;</span><br><span class="line">          called &#x3D; true;</span><br><span class="line"></span><br><span class="line">          reject(e);</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        &#x2F;&#x2F; [2.3.3.4 ] 如果 then 不是函数，以 x 为参数执行 promise</span><br><span class="line">        resolve(x)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; catch(e) &#123; &#x2F;&#x2F; [2.3.3.2] 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise</span><br><span class="line">      if (called) return;</span><br><span class="line">      called &#x3D; true;</span><br><span class="line"></span><br><span class="line">      reject(e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    resolve(x);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>验证你的 Promise 是否正确<br>Promise 提供了一个测试脚本，进行正确性验证。</li>
+</ol>
+<p>同时需要暴露出一个 deferred 方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MayJunPromise.defer &#x3D; MayJunPromise.deferred &#x3D; function () &#123;</span><br><span class="line">  let dfd &#x3D; &#123;&#125;</span><br><span class="line">  dfd.promise &#x3D; new MayJunPromise((resolve,reject)&#x3D;&gt;&#123;</span><br><span class="line">    dfd.resolve &#x3D; resolve;</span><br><span class="line">    dfd.reject &#x3D; reject;</span><br><span class="line">  &#125;);</span><br><span class="line">  return dfd;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports &#x3D; MayJunPromise;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>catch、resolve、reject、all、race 方法实现<br>Promise/A+ 规范中只提供了 then 方法，但是我们使用的 catch、Promise.all、Promise.race 等都可以在 then 方法的基础上进行实现<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">class MayJunPromise &#123;</span><br><span class="line">   constructor(fn)&#123;...&#125;</span><br><span class="line">  then()&#123;...&#125;,</span><br><span class="line">  &#x2F;**</span><br><span class="line">   * 捕获错误</span><br><span class="line">   * @param &#123; Function &#125; onRejected </span><br><span class="line">   *&#x2F;</span><br><span class="line">  catch(onRejected) &#123;</span><br><span class="line">    return this.then(undefined, onRejected);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 仅返回成功态，即 status &#x3D; fulfilled</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.resolve &#x3D; function(value) &#123;</span><br><span class="line">  return (value instanceof Promise || value instanceof MayJunPromise) ? value &#x2F;&#x2F; 如果是 Promise 实例直接返回</span><br><span class="line">    : new MayJunPromise(resolve &#x3D;&gt; resolve(value));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * 仅返回失败态，即 status &#x3D; rejected</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.reject &#x3D; function(value) &#123;</span><br><span class="line">  return (value instanceof Promise || value instanceof MayJunPromise) ? value : new MayJunPromise(reject &#x3D;&gt; reject(value));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * MayJunPromise.all() 并行执行</span><br><span class="line"> * @param &#123; Array &#125; arr</span><br><span class="line"> * @returns &#123; Array &#125;</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.all &#x3D; function(arr) &#123;</span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    const length &#x3D; arr.length;</span><br><span class="line">    let results &#x3D; []; &#x2F;&#x2F; 保存执行结果</span><br><span class="line">    let count &#x3D; 0; &#x2F;&#x2F; 计数器</span><br><span class="line"></span><br><span class="line">    for (let i&#x3D;0; i&lt;length; i++) &#123;</span><br><span class="line">      MayJunPromise.resolve(arr[i]).then(res &#x3D;&gt; &#123;</span><br><span class="line">        results[i] &#x3D; res;</span><br><span class="line">        count++;</span><br><span class="line"></span><br><span class="line">        if (count &#x3D;&#x3D;&#x3D; length) &#123; &#x2F;&#x2F; 全部都变为 fulfilled 之后结束</span><br><span class="line">          resolve(results);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, err &#x3D;&gt; reject(err)); &#x2F;&#x2F; 只要有一个失败，就将失败结果返回</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * MayJunPromise.race() 率先执行，只要一个执行完毕就返回结果;</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.race &#x3D; function(arr) &#123;</span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    for (let i&#x3D;0; i&lt;arr.length; i++) &#123;</span><br><span class="line">      MayJunPromise.resolve(arr[i])</span><br><span class="line">        .then(result &#x3D;&gt; resolve(result), err &#x3D;&gt; reject(err));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>并发请求控制<br>Promise.all 同时将请求发出，假设我现在有上万条请求，势必会造成服务器的压力，如果我想限制在最大并发 100 该怎么做？例如，在 Chrome 浏览器中就有这样的限制，Chrome 中每次最大并发链接为 6 个，其余的链接需要等待其中任一个完成，才能得到执行，下面定义 allByLimit 方法实现类似功能。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 并发请求限制</span><br><span class="line"> * @param &#123; Array &#125; arr 并发请求的数组</span><br><span class="line"> * @param &#123; Number &#125; limit 并发限制数</span><br><span class="line"> *&#x2F;</span><br><span class="line">MayJunPromise.allByLimit &#x3D; function(arr, limit) &#123;</span><br><span class="line">  const length &#x3D; arr.length;</span><br><span class="line">  const requestQueue &#x3D; [];</span><br><span class="line">  const results &#x3D; [];</span><br><span class="line">  let index &#x3D; 0;</span><br><span class="line"></span><br><span class="line">  return new MayJunPromise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">    const requestHandler &#x3D; function() &#123;    </span><br><span class="line">      console.log(&#39;Request start &#39;, index);</span><br><span class="line">      const request &#x3D; arr[index].then(res &#x3D;&gt; res, err &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;Error&#39;, err);</span><br><span class="line"></span><br><span class="line">        return err;</span><br><span class="line">      &#125;).then(res &#x3D;&gt; &#123;</span><br><span class="line">        console.log(&#39;Number of concurrent requests&#39;, requestQueue.length)</span><br><span class="line">        const count &#x3D; results.push(res); &#x2F;&#x2F; 保存所有的结果</span><br><span class="line"></span><br><span class="line">        requestQueue.shift(); &#x2F;&#x2F; 每完成一个就从请求队列里剔除一个</span><br><span class="line"></span><br><span class="line">        if (count &#x3D;&#x3D;&#x3D; length) &#123; &#x2F;&#x2F; 所有请求结束，返回结果</span><br><span class="line">          resolve(results);</span><br><span class="line">        &#125; else if (count &lt; length &amp;&amp; index &lt; length - 1) &#123;</span><br><span class="line">          ++index;</span><br><span class="line">          requestHandler(); &#x2F;&#x2F; 继续下一个请求</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      if (requestQueue.push(request) &lt; limit) &#123;</span><br><span class="line">        ++index;</span><br><span class="line">        requestHandler();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    requestHandler()</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+测试，定义一个 sleep 睡眠函数，模拟延迟执行<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 睡眠函数</span><br><span class="line"> * @param &#123; Number &#125; ms 延迟时间|毫秒</span><br><span class="line"> * @param &#123; Boolean &#125; flag 默认 false，若为 true 返回 reject 测试失败情况</span><br><span class="line"> *&#x2F;</span><br><span class="line">const sleep &#x3D; (ms&#x3D;0, flag&#x3D;false) &#x3D;&gt; new Promise((resolve, reject) &#x3D;&gt; setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">  if (flag) &#123;</span><br><span class="line">    reject(&#39;Reject &#39; + ms);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    resolve(ms);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, ms));</span><br><span class="line"></span><br><span class="line">MayJunPromise.allByLimit([</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(1000),</span><br><span class="line">  sleep(5000, true),</span><br><span class="line">  sleep(10000),</span><br><span class="line">], 3).then(res &#x3D;&gt; &#123;</span><br><span class="line">  console.log(res);</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 以下为运行结果</span><br><span class="line"></span><br><span class="line">Request start  0</span><br><span class="line">Request start  1</span><br><span class="line">Request start  2</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Request start  3</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Request start  4</span><br><span class="line">Number of concurrent requests 3</span><br><span class="line">Error Reject 5000</span><br><span class="line">Number of concurrent requests 2</span><br><span class="line">Number of concurrent requests 1</span><br><span class="line">[ 1000, 1000, 1000, &#39;Reject 5000&#39;, 10000 ]</span><br></pre></td></tr></table></figure></li>
+<li>Promise reference</li>
+</ol>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/21834559">https://zhuanlan.zhihu.com/p/21834559</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5b2f02cd5188252b937548ab">https://juejin.im/post/5b2f02cd5188252b937548ab</a></li>
+<li><a target="_blank" rel="noopener" href="https://promisesaplus.com/">https://promisesaplus.com/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ituring.com.cn/article/66566">https://www.ituring.com.cn/article/66566</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/06/nodejs/JavaScript%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1022,306 +1564,6 @@ apply传递参数是按照数组传递，call是一个一个传递</li>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/02/%E9%98%85%E8%AF%BB%E7%94%B5%E5%AD%90%E4%B9%A6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="闫海江">
-      <meta itemprop="description" content="web前端 java android ios 宅">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="五五">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/02/%E9%98%85%E8%AF%BB%E7%94%B5%E5%AD%90%E4%B9%A6/" class="post-title-link" itemprop="url">阅读电子书</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-02 23:22:38" itemprop="dateCreated datePublished" datetime="2021-03-02T23:22:38+08:00">2021-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-03 23:45:34" itemprop="dateModified" datetime="2021-03-03T23:45:34+08:00">2021-03-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://www.nodejs.red/">nodejs技术栈</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/02/nodejs/JavaScript_this/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="闫海江">
-      <meta itemprop="description" content="web前端 java android ios 宅">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="五五">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/02/nodejs/JavaScript_this/" class="post-title-link" itemprop="url">详解 JavaScript 中的 this</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-02 22:24:01" itemprop="dateCreated datePublished" datetime="2021-03-02T22:24:01+08:00">2021-03-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-04 21:44:50" itemprop="dateModified" datetime="2021-03-04T21:44:50+08:00">2021-03-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="两种错误认识"><a href="#两种错误认识" class="headerlink" title="两种错误认识"></a>两种错误认识</h3><h2 id="指向自身"><a href="#指向自身" class="headerlink" title="指向自身"></a>指向自身</h2><p><strong>this 的第一个错误认识是，很容易把 this 理解成指向函数自身，</strong>其实this 的指向在函数定义阶段是无法确定的，只有函数执行时才能确定 this 到底指向谁，实际 this 的最终指向是调用它的那个对象。<br>下面示例，声明函数 foo()，执行 foo.count=0 时，像函数对象 foo 添加一个属性 count。但是函数 foo 内部代码 this.count 中的 this 并不是指向那个函数对象，for 循环中的 foo(i) 掉用它的对象是 window，等价于 window.foo(i)，因此函数 foo 里面的 this 指向的是 window。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function foo(num)&#123;</span><br><span class="line">  this.count++; &#x2F;&#x2F; 记录 foo 被调用次数</span><br><span class="line">&#125;</span><br><span class="line">foo.count &#x3D; 0;</span><br><span class="line">window.count &#x3D; 0;</span><br><span class="line">for(let i&#x3D;0; i&lt;10; i++)&#123;</span><br><span class="line">  if(i &gt; 5)&#123;</span><br><span class="line">    foo(i);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">console.log(foo.count, window.count); &#x2F;&#x2F; 0 4</span><br></pre></td></tr></table></figure>
-<h2 id="指向函数的作用域"><a href="#指向函数的作用域" class="headerlink" title="指向函数的作用域"></a>指向函数的作用域</h2><p><strong>对 this 的第二种误解就是 this 指向函数的作用域</strong><br>以下这段代码，在 foo 中试图调用 bar 函数，是否成功调用，取决于环境。</p>
-<ul>
-<li><strong>浏览器：</strong>在浏览器环境里是没有问题的，全局声明的函数放在了 window 对象下，foo 函数里面的 this 代指的是 window 对象，在全局环境中并没有声明变量 a，因此在 bar 函数中的 this.a 自然没有定义，输出 undefined。</li>
-<li><strong>Node.js：</strong>在 Node.js 环境下，声明的 function 不会放在 global 全局对象下，因此在 foo 函数里调用 this.bar 函数会报<code>TypeError: this.bar is not a function</code>错误。要想运行不报错，调用 bar 函数时省去前面的 this。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function foo()&#123;</span><br><span class="line">  var a &#x3D; 2;</span><br><span class="line">  this.bar();</span><br><span class="line">&#125;</span><br><span class="line">function bar()&#123;</span><br><span class="line">  console.log(this.a);</span><br><span class="line">&#125;</span><br><span class="line">foo();</span><br></pre></td></tr></table></figure>
-<h3 id="This-四种绑定规则"><a href="#This-四种绑定规则" class="headerlink" title="This 四种绑定规则"></a>This 四种绑定规则</h3><h2 id="默认绑定"><a href="#默认绑定" class="headerlink" title="默认绑定"></a>默认绑定</h2>当函数调用属于独立调用（不带函数引用的调用），无法调用其他的绑定规则，我们给它一个称呼 “默认绑定”，在非严格模式下绑定到全局对象，在使用了严格模式 (use strict) 下绑定到 undefined。</li>
-</ul>
-<p><strong>严格模式下调用</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;</span><br><span class="line">function demo()&#123;</span><br><span class="line">  &#x2F;&#x2F; TypeError: Cannot read property &#39;a&#39; of undefined</span><br><span class="line">  console.log(this.a);</span><br><span class="line">&#125;</span><br><span class="line">const a &#x3D; 1;</span><br><span class="line">demo();</span><br></pre></td></tr></table></figure>
-<p><strong>非严格模式下调用</strong><br>在浏览器环境下会将 a 绑定到 window.a，以下代码使用 var 声明的变量 a 会输出 1。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function demo()&#123;</span><br><span class="line">  console.log(this.a); &#x2F;&#x2F; 1</span><br><span class="line">&#125;</span><br><span class="line">var a &#x3D; 1;</span><br><span class="line">demo();</span><br></pre></td></tr></table></figure>
-<p>以下代码使用 let 或 const 声明变量 a 结果会输出 undefined</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function demo()&#123;</span><br><span class="line">  console.log(this.a); &#x2F;&#x2F; undefined</span><br><span class="line">&#125;</span><br><span class="line">let a &#x3D; 1;</span><br><span class="line">demo();</span><br></pre></td></tr></table></figure>
-<p><code>顶层对象</code>的概念，顶层对象（浏览器环境指 window、Node.js 环境指 Global）的属性和全局变量属性的赋值是相等价的，使用 var 和 function 声明的是顶层对象的属性，而 let 就属于 ES6 规范了，但是 ES6 规范中 let、const、class 这些声明的全局变量，不再属于顶层对象的属性。</p>
-<h3 id="隐式绑定"><a href="#隐式绑定" class="headerlink" title="隐式绑定"></a>隐式绑定</h3><p>在函数的调用位置处被某个对象包含，拥有上下文，看以下示例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function child() &#123;</span><br><span class="line">  console.log(this.name);</span><br><span class="line">&#125;</span><br><span class="line">let parent &#x3D; &#123;</span><br><span class="line">  name: &#39;zhangsan&#39;,</span><br><span class="line">  child,</span><br><span class="line">&#125;</span><br><span class="line">parent.child(); &#x2F;&#x2F; zhangsan</span><br></pre></td></tr></table></figure>
-<p>函数在调用时会使用 parent 对象上下文来引用函数 child，可以理解为child 函数被调用时 parent 对象拥有或包含它。</p>
-<h2 id="隐式绑定的隐患"><a href="#隐式绑定的隐患" class="headerlink" title="隐式绑定的隐患"></a>隐式绑定的隐患</h2><p>被隐式绑定的函数，因为一些不小心的操作会丢失绑定对象，此时就会应用最开始讲的绑定规则中的默认绑定，看下面代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function child() &#123;</span><br><span class="line">  console.log(this.name);</span><br><span class="line">&#125;</span><br><span class="line">let parent &#x3D; &#123;</span><br><span class="line">  name: &#39;zhangsan&#39;,</span><br><span class="line">  child,</span><br><span class="line">&#125;</span><br><span class="line">let parent2 &#x3D; parent.child;</span><br><span class="line">var name &#x3D; &#39;lisi&#39;;</span><br><span class="line">parent2(); &#x2F;&#x2F; lisi</span><br></pre></td></tr></table></figure>
-<p>将 parent.child 函数本身赋给 parent2，调用 parent2() 其实是一个不带任何修饰的函数调用，因此会应用默认绑定。</p>
-<h2 id="显示绑定"><a href="#显示绑定" class="headerlink" title="显示绑定"></a>显示绑定</h2><p>显示绑定和隐式绑定从字面意思理解，有一个相反的对比，一个表现的更直接，一个表现的更委婉，下面在看下两个规则各自的含义:</p>
-<ul>
-<li><strong>隐式绑定：</strong>在一个对象的内部通过属性间接引用函数，从而把 this 隐式绑定到对象内部属性所指向的函数（例如上例中的对象 parent 的 child 属性引用函数 function child(){}）。</li>
-<li><strong>显示绑定：</strong>需要引用一个对象时进行强制绑定调用，js 有提供 call()、apply() 方法，ES5 中也提供了内置的方法 <code>Function.prototype.bind</code>。<br>call()、apply() 这两个函数的第一个参数都是设置 this 对象，区别是 apply 传递参数是按照数组传递，call 是一个一个传递。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function fruit(...args)&#123;</span><br><span class="line">  console.log(this.name, args);</span><br><span class="line">&#125;</span><br><span class="line">var apple &#x3D; &#123;</span><br><span class="line">  name: &#39;苹果&#39;</span><br><span class="line">&#125;</span><br><span class="line">var banana &#x3D; &#123;</span><br><span class="line">  name: &#39;香蕉&#39;</span><br><span class="line">&#125;</span><br><span class="line">fruit.call(banana, &#39;a&#39;, &#39;b&#39;)  &#x2F;&#x2F; 香蕉 [ &#39;a&#39;, &#39;b&#39; ]</span><br><span class="line">fruit.apply(apple, [&#39;a&#39;, &#39;b&#39;]) &#x2F;&#x2F; 苹果 [ &#39;a&#39;, &#39;b&#39; ]</span><br></pre></td></tr></table></figure>
-下面是 bind 绑定的示例，只是将一个值绑定到函数的 this 上，并将绑定好的函数返回，只有在执行 fruit 函数时才会输出信息，例：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function fruit()&#123;</span><br><span class="line">  console.log(this.name);</span><br><span class="line">&#125;</span><br><span class="line">var apple &#x3D; &#123;</span><br><span class="line">  name: &#39;苹果&#39;</span><br><span class="line">&#125;</span><br><span class="line">fruit &#x3D; fruit.bind(apple);</span><br><span class="line">fruit(); &#x2F;&#x2F; 苹果</span><br></pre></td></tr></table></figure>
-除了以上 call、apply、bind 还可以通过上下文 context，例:<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function fruit(name)&#123;</span><br><span class="line">  console.log(&#96;$&#123;this.name&#125;: $&#123;name&#125;&#96;);</span><br><span class="line">&#125;</span><br><span class="line">const obj &#x3D; &#123;</span><br><span class="line">  name: &#39;这是水果&#39;,</span><br><span class="line">&#125;</span><br><span class="line">const arr &#x3D; [&#39;苹果&#39;, &#39;香蕉&#39;];</span><br><span class="line">arr.forEach(fruit, obj);</span><br><span class="line">&#x2F;&#x2F; 这是水果: 苹果</span><br><span class="line">&#x2F;&#x2F; 这是水果: 香蕉</span><br></pre></td></tr></table></figure>
-<h3 id="new-绑定"><a href="#new-绑定" class="headerlink" title="new 绑定"></a>new 绑定</h3>new 绑定也可以影响 this 调用，它是一个构造函数，每一次 new 绑定都会创建一个新对象。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function Fruit(name)&#123;</span><br><span class="line">  this.name &#x3D; name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const f1 &#x3D; new Fruit(&#39;apple&#39;);</span><br><span class="line">const f2 &#x3D; new Fruit(&#39;banana&#39;);</span><br><span class="line">console.log(f1.name, f2.name); &#x2F;&#x2F; apple banana</span><br></pre></td></tr></table></figure>
-<h3 id="优先级"><a href="#优先级" class="headerlink" title="优先级"></a>优先级</h3>如果 this 的调用位置同时应用了多种绑定规则，它是有优先级的：new 绑定 -&gt; 显示绑定 -&gt; 隐式绑定 -&gt; 默认绑定。<h3 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h3>箭头函数并非使用 function 关键字进行定义，也不会使用上面所讲解的 this 四种标准规范，箭头函数会继承自外层函数调用的 this 绑定。<br>执行 <code>fruit.call(apple)</code> 时，箭头函数 this 已被绑定，无法再次被修改。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function fruit()&#123;</span><br><span class="line">  return () &#x3D;&gt; &#123;</span><br><span class="line">    console.log(this.name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">var apple &#x3D; &#123;</span><br><span class="line">  name: &#39;苹果&#39;</span><br><span class="line">&#125;</span><br><span class="line">var banana &#x3D; &#123;</span><br><span class="line">  name: &#39;香蕉&#39;</span><br><span class="line">&#125;</span><br><span class="line">var fruitCall &#x3D; fruit.call(apple);</span><br><span class="line">fruitCall.call(banana); &#x2F;&#x2F; 苹果</span><br></pre></td></tr></table></figure>
-<h3 id="This-使用常见问题"><a href="#This-使用常见问题" class="headerlink" title="This 使用常见问题"></a>This 使用常见问题</h3><h2 id="通过函数和原型链模拟类"><a href="#通过函数和原型链模拟类" class="headerlink" title="通过函数和原型链模拟类"></a>通过函数和原型链模拟类</h2>以下示例，定义函数 Fruit，之后在原型链上定义 info 方法，实例化对象 f1 和定义对象 f2 分别调用 info 方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function Fruit(name) &#123;</span><br><span class="line">  this.name &#x3D; name;</span><br><span class="line">&#125;</span><br><span class="line">Fruit.prototype.info &#x3D; function() &#123;</span><br><span class="line">  console.log(this.name);</span><br><span class="line">&#125;</span><br><span class="line">const f1 &#x3D; new Fruit(&#39;Apple&#39;);</span><br><span class="line">f1.info();</span><br><span class="line">const f2 &#x3D; &#123; name: &#39;Banana&#39; &#125;;</span><br><span class="line">f2.info &#x3D; f1.info;</span><br><span class="line">f2.info()</span><br></pre></td></tr></table></figure>
-输出之后，两次结果是不一样的，原因是 info 方法里的 this 对应的不是定义时的上下文，而是调用时的上下文，根据我们上面讲的几种绑定规则，对应的是隐式绑定规则。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Apple</span><br><span class="line">Banana</span><br></pre></td></tr></table></figure>
-<h2 id="原型链上使用箭头函数"><a href="#原型链上使用箭头函数" class="headerlink" title="原型链上使用箭头函数"></a>原型链上使用箭头函数</h2>如果使用构造函数和原型链模拟类，不能在原型链上定义箭头函数，因为箭头函数的里的 this 会继承外层函数调用的 this 绑定。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function Fruit(name) &#123;</span><br><span class="line">  this.name &#x3D; name;</span><br><span class="line">&#125;</span><br><span class="line">Fruit.prototype.info &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">  console.log(this.name);</span><br><span class="line">&#125;</span><br><span class="line">var name &#x3D; &#39;Banana&#39;</span><br><span class="line">const f1 &#x3D; new Fruit(&#39;Apple&#39;);</span><br><span class="line">f1.info(); &#x2F;&#x2F; Banana</span><br></pre></td></tr></table></figure>
-<h2 id="在事件中的使用"><a href="#在事件中的使用" class="headerlink" title="在事件中的使用"></a>在事件中的使用</h2>举一个 Node.js 示例，在事件中使用时，当我们的监听器被调用时，如果声明的是普通函数，this 会被指向监听器所绑定的 EventEmitter 实例，如果使用的箭头函数方式 this 不会指向 EventEmitter 实例。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const EventEmitter &#x3D; require(&#39;events&#39;);</span><br><span class="line">class MyEmitter extends EventEmitter &#123;</span><br><span class="line">  constructor() &#123;</span><br><span class="line">    super();</span><br><span class="line">    this.name &#x3D; &#39;myEmitter&#39;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">const func1 &#x3D; () &#x3D;&gt; console.log(this.name);</span><br><span class="line">const func2 &#x3D; function () &#123; console.log(this.name); &#125;;</span><br><span class="line">const myEmitter &#x3D; new MyEmitter();</span><br><span class="line">myEmitter.on(&#39;event&#39;, func1); &#x2F;&#x2F; undefined</span><br><span class="line">myEmitter.on(&#39;event&#39;, func2); &#x2F;&#x2F; myEmitter</span><br><span class="line">myEmitter.emit(&#39;event&#39;);</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/02/nodejs/JavaScript%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="闫海江">
-      <meta itemprop="description" content="web前端 java android ios 宅">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="五五">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/02/nodejs/JavaScript%E5%9F%BA%E7%A1%80%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">JavaScript基础问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-03-02 22:24:01 / Modified: 23:45:11" itemprop="dateCreated datePublished" datetime="2021-03-02T22:24:01+08:00">2021-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a target="_blank" rel="noopener" href="https://www.nodejs.red/">https://www.nodejs.red/</a>整理</p>
-<h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><ul>
-<li><font color=#e96900 size=3>JavaScript</font> 七种内置类型:<code>number、string、boolean、undefined、null、object、symbol</code>(ES6新增加)</li>
-<li><font color=#e96900 size=3>基本类型：</font> 指保存在栈内存中的数据<br><font color=#e96900 size=3>引用类型：</font> <code>(对象引用)</code>指保存在堆内存中的对象，传递的是引用的地址</li>
-<li><font color=#e96900 size=3>(typeof null === ‘object’) = true</font>正确的返回值应该是null，但是这个bug由来已久<br><font color=#e96900 size=3>(undefined == null) = true</font></li>
-<li><code>indexOf</code>为<code>ECMAScript5</code>新方法，<code>IE8</code>及以下不支持</li>
-<li><code>setTimeout(callback, 100)</code>，setTimeout只接受一个函数做为参数不接受闭包，因为闭包会自执行，Nodejs 下最小延迟 1ms<h3 id="undefined与undeclared的区别"><a href="#undefined与undeclared的区别" class="headerlink" title="undefined与undeclared的区别"></a>undefined与undeclared的区别</h3><code>undefined：</code> 已在作用域中声明但还没有赋值的变量是undefined。<br><code>undeclared：</code>还没有在作用域中声明过的变量是undeclared，对于undeclared这种情况typeof处理的时候返回的是undefined。尝试访问一个undeclared的变量，浏览器会报错，JS执行会中断。<h3 id="欺骗词法作用域"><a href="#欺骗词法作用域" class="headerlink" title="欺骗词法作用域"></a>欺骗词法作用域</h3><blockquote>
-<p>词法作用域由写代码期间函数所声明的位置来定义，javascript有两种机制(eval()、with)在运行时来修改词法作用域，这样做通常会导致性能下降，内存泄漏问题。</p>
-</blockquote>
-</li>
-<li>eval函数接收一个字符串为参数，解析字符串生成代码并运行</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function test(str, b)&#123;</span><br><span class="line">    eval(str);</span><br><span class="line"></span><br><span class="line">    console.log(a, b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var a &#x3D; 1;</span><br><span class="line"></span><br><span class="line">test(&quot;var a &#x3D; 3&quot;, 2); &#x2F;&#x2F; 3 2</span><br><span class="line"></span><br><span class="line">console.log(a); &#x2F;&#x2F; 1</span><br></pre></td></tr></table></figure>
-<p>上面这段代码示例，eval调用的str相当于在test函数作用域内部声明了一个新的变量b，当console.log()在打印时会在foo函数内部找到a和b，将无法找到外部的a，因此最终输出结果是3和2，最外层a仍就输出是1，两者比较可以看到效果。</p>
-<ul>
-<li>with通常被当作重复引用同一个对象中的多个属性的快捷方式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">function withObj(obj)&#123;</span><br><span class="line">    with(obj)&#123;</span><br><span class="line">        a &#x3D; 2</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let o1 &#x3D; &#123;</span><br><span class="line">    a: 1,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let o2 &#x3D; &#123;</span><br><span class="line">    b: 1,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">withObj(o1);</span><br><span class="line">console.log(o1.a); &#x2F;&#x2F; 2</span><br><span class="line"></span><br><span class="line">withObj(o2);</span><br><span class="line">console.log(o2.a); &#x2F;&#x2F; undefined</span><br><span class="line">console.log(a); &#x2F;&#x2F; 2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-以上示例中withObj(obj)函数接受一个obj参数，该参数是一个对象引用，执行了with，o1传进去，a=2赋值操作找到了o1.a并将2赋值给它，o2传进去，因为o2没有a属性，就不会创建这个属性，o2.a保持undefined，这个时候就会创建一个新的全局变量a。</li>
-<li>对性能的影响<br>javascript引擎在编译阶段会进行性能优化，很多优化依赖于能够根据代码词法进行静态分析，预先确定了变量和函数的定义位置，才能快速找到标识符，但是在词法分析阶段遇到了with或eval无法明确知道它们会接收什么代码，也就无法判断标识符的位置，最简单的做法就是遇到with或eval不做任何优化，使用其中一个都会导致代码运行变慢，因此，请不要使用他们。<h3 id="类型检测"><a href="#类型检测" class="headerlink" title="类型检测"></a>类型检测</h3></li>
-<li><code>typeof</code>：基本类型用<code>typeof</code>来检测</li>
-<li><code>instanceof</code>：用来检测是否为数组、对象、正则<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let box &#x3D; [1,2,3];</span><br><span class="line">console.log(box instanceof Array); &#x2F;&#x2F;true</span><br><span class="line"></span><br><span class="line">let box1&#x3D;&#123;&#125;;</span><br><span class="line">console.log(box1 instanceof Object); &#x2F;&#x2F;true</span><br><span class="line"></span><br><span class="line">let box2&#x3D;&#x2F;g&#x2F;;</span><br><span class="line">console.log(box2 instanceof RegExp); &#x2F;&#x2F;true</span><br></pre></td></tr></table></figure>
-<h3 id="错误"><a href="#错误" class="headerlink" title="错误"></a>错误</h3></li>
-<li>ReferenceError错误<blockquote>
-<p>如果在所有嵌套的作用域中遍寻不到所需的变量，引擎会抛出ReferenceError错误，意味这，这是一个未声明的变量，这个错误是一个非常重要的异常类型。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#39;a: &#39;, a); &#x2F;&#x2F; Uncaught ReferenceError: a is not defined</span><br><span class="line">let a &#x3D; 2;</span><br></pre></td></tr></table></figure></li>
-<li>TypeError错误<blockquote>
-<p>这种错误表示作用域判别成功，但是进行了非法的操作，例如，对一个非函数类型的值进行函数调用，或者引用null、undefined类型的值中的属性，将会抛出TypeError异常错误。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let a &#x3D; null; &#x2F;&#x2F; 或者a &#x3D; undefined</span><br><span class="line">console.log(a.b); &#x2F;&#x2F; Uncaught TypeError: Cannot read property &#39;b&#39; of null</span><br></pre></td></tr></table></figure>
-对一个非函数类型的值进行函数调用<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let a &#x3D; 2;</span><br><span class="line">a(); &#x2F;&#x2F; TypeError: a is not a function</span><br></pre></td></tr></table></figure>
-<h3 id="数组去重的三种实现方式"><a href="#数组去重的三种实现方式" class="headerlink" title="数组去重的三种实现方式"></a>数组去重的三种实现方式</h3></li>
-<li>Set数组去重<blockquote>
-<p>ES6新的数据结构Set，类似于数组，它的元素都是唯一的。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">let arr &#x3D; [1, 22, 33, 44, 22, 44];</span><br><span class="line"></span><br><span class="line">console.log([...new Set(arr)]); &#x2F;&#x2F;[1, 22, 33, 44]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>reduce数组对象去重<blockquote>
-<p>reduce对数组中的每一个元素依次执行回调函数，不含数组中未赋值、被删除的元素，回调函数接收四个参数</p>
-</blockquote>
-</li>
-<li>callback：执行数组中每个值的函数，包含四个参数<ul>
-<li>previousValue：上一次调用回调返回的值，或者是提供的初始值（initialValue）</li>
-<li>currentValue：数组中当前被处理的元素</li>
-<li>index：当前元素在数组中的索引</li>
-<li>array：调用 reduce 的数组</li>
-<li>initialValue：可选，作为第一次调用 callback 的第一个参数。<br>示例：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let hash &#x3D; &#123;&#125;;</span><br><span class="line"></span><br><span class="line">function unique(arr, initialValue)&#123;</span><br><span class="line">    return arr.reduce(function(previousValue, currentValue, index, array)&#123;</span><br><span class="line">        hash[currentValue.name] ? &#39;&#39; : hash[currentValue.name] &#x3D; true &amp;&amp; previousValue.push(currentValue);</span><br><span class="line"></span><br><span class="line">        return previousValue</span><br><span class="line">    &#125;, initialValue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const uniqueArr &#x3D; unique([&#123;name: &#39;zs&#39;, age: 15&#125;, &#123;name: &#39;lisi&#39;&#125;, &#123;name: &#39;zs&#39;&#125;], []);</span><br><span class="line"></span><br><span class="line">console.log(uniqueArr); &#x2F;&#x2F; uniqueArr.length &#x3D;&#x3D; 2</span><br></pre></td></tr></table></figure>
-<h3 id="数组降维"><a href="#数组降维" class="headerlink" title="数组降维"></a>数组降维</h3></li>
-</ul>
-</li>
-<li>方法一：将数组字符串化<blockquote>
-<p>利用数组与字符串的隐式转换，使用+符号链接一个对象，javascript会默认调用toString方法转为字符串，再使用字符串分割成字符串数组，最后转成数值形数组</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let arr &#x3D; [[222, 333, 444], [55, 66, 77], 11, ]</span><br><span class="line">arr +&#x3D; &#39;&#39;;</span><br><span class="line">arr &#x3D; arr.split(&#39;,&#39;);</span><br><span class="line">arr &#x3D; arr.map(item &#x3D;&gt; Number(item));</span><br><span class="line"></span><br><span class="line">console.log(arr); &#x2F;&#x2F; [222, 333, 444, 55, 66, 77, 11]</span><br></pre></td></tr></table></figure></li>
-<li>方法二：利用apply和concat转换<blockquote>
-<p>concat() 方法用于连接两个或多个数组。该方法不会改变现有的数组，而仅仅会返回被连接数组的一个副本。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    function reduceDimension(arr) &#123;</span><br><span class="line">        return Array.prototype.concat.apply([], arr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    console.log(reduceDimension([[123], 4, [7, 8],[9, [111]]]));</span><br><span class="line">    &#x2F;&#x2F; [123, 4, 7, 8, 9, Array(1)]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>方法三 自定义函数实现<blockquote>
-<p>推荐使用，经测试这个是执行效率最高的。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">function reduceDimension(arr)&#123;</span><br><span class="line">    let ret &#x3D; [];</span><br><span class="line"></span><br><span class="line">    let toArr &#x3D; function(arr)&#123;</span><br><span class="line">        arr.forEach(function(item)&#123;</span><br><span class="line">            item instanceof Array ? toArr(item) : ret.push(item);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    toArr(arr);</span><br><span class="line"></span><br><span class="line">    return ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let arr &#x3D; [[12], 4, [333, [4444, 5555]], [9, [111, 222]]];</span><br><span class="line"></span><br><span class="line">for(let i &#x3D; 0; i &lt; 100000; i++)&#123;</span><br><span class="line">    arr.push(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let start &#x3D; new Date().getTime();</span><br><span class="line"></span><br><span class="line">console.log(&#39;reduceDimension: &#39;, reduceDimension(arr));</span><br><span class="line">console.log(&#39;耗时: &#39;, new Date().getTime() - start);</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1390,18 +1632,18 @@ apply传递参数是按照数组传递，call是一个一个传递</li>
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
