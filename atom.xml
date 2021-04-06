@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-03-23T14:47:33.876Z</updated>
+  <updated>2021-04-06T15:44:50.376Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Js 的事件循环(Event Loop)机制</title>
+    <link href="http://example.com/2021/04/06/202104/Js%20%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF(Event%20Loop)%E6%9C%BA%E5%88%B6/"/>
+    <id>http://example.com/2021/04/06/202104/Js%20%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF(Event%20Loop)%E6%9C%BA%E5%88%B6/</id>
+    <published>2021-04-06T15:30:37.000Z</published>
+    <updated>2021-04-06T15:44:50.376Z</updated>
+    
+    <content type="html"><![CDATA[<p>[<a href="https://segmentfault.com/a/1190000015317434]">https://segmentfault.com/a/1190000015317434]</a><br>大家都知道js是单线程的脚本语言，在同一时间，只能做同一件事，为了协调事件、用户交互、脚本、UI渲染和网络处理等行为，防止主线程阻塞，Event Loop方案应运而生…</p><h2 id="为什么js是单线程？"><a href="#为什么js是单线程？" class="headerlink" title="为什么js是单线程？"></a>为什么js是单线程？</h2><p>js作为主要运行在浏览器的脚本语言，js主要用途之一是操作DOM。<br>在js高程中举过一个栗子，如果js同时有两个线程，同时对同一个dom进行操作，这时浏览器应该听哪个线程的，如何判断优先级？<br>为了避免这种问题，js必须是一门单线程语言，并且在未来这个特点也不会改变。</p><h2 id="执行栈与任务队列"><a href="#执行栈与任务队列" class="headerlink" title="执行栈与任务队列"></a>执行栈与任务队列</h2><p>因为js是单线程语言，当遇到异步任务(如ajax操作等)时，不可能一直等待异步完成，再继续往下执行，在这期间浏览器是空闲状态，显而易见这会导致巨大的资源浪费。</p><h2 id="执行栈"><a href="#执行栈" class="headerlink" title="执行栈"></a>执行栈</h2><p>当执行某个函数、用户点击一次鼠标，Ajax完成，一个图片加载完成等事件发生时，只要指定过回调函数，这些事件发生时就会进入执行栈队列中，等待主线程读取,遵循先进先出原则。</p><h2 id="主线程"><a href="#主线程" class="headerlink" title="主线程"></a>主线程</h2><p>要明确的一点是，主线程跟执行栈是不同概念，主线程规定现在执行执行栈中的哪个事件。<br>主线程循环：即主线程会不停的从执行栈中读取事件，会执行完所有栈中的同步代码。<br>当遇到一个异步事件后，并不会一直等待异步事件返回结果，而是会将这个事件挂在与执行栈不同的队列中，我们称之为任务队列(Task Queue)。<br><strong>当主线程将执行栈中所有的代码执行完之后，主线程将会去查看任务队列是否有任务。</strong>如果有，那么主线程会依次执行那些任务队列中的回调函数。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">let a &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">  setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;任务队列函数1&#39;)</span><br><span class="line">  &#125;, 0)</span><br><span class="line">  for (let i &#x3D; 0; i &lt; 5000; i++) &#123;</span><br><span class="line">    console.log(&#39;a的for循环&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(&#39;a事件执行完&#39;)</span><br><span class="line">&#125;</span><br><span class="line">let b &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">  setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;任务队列函数2&#39;)</span><br><span class="line">  &#125;, 0)</span><br><span class="line">  for (let i &#x3D; 0; i &lt; 5000; i++) &#123;</span><br><span class="line">    console.log(&#39;b的for循环&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(&#39;b事件执行完&#39;)</span><br><span class="line">&#125;</span><br><span class="line">let c &#x3D; () &#x3D;&gt; &#123;</span><br><span class="line">  setTimeout(() &#x3D;&gt; &#123;</span><br><span class="line">    console.log(&#39;任务队列函数3&#39;)</span><br><span class="line">  &#125;, 0)</span><br><span class="line">  for (let i &#x3D; 0; i &lt; 5000; i++) &#123;</span><br><span class="line">    console.log(&#39;c的for循环&#39;)</span><br><span class="line">  &#125;</span><br><span class="line">  console.log(&#39;c事件执行完&#39;)</span><br><span class="line">&#125;</span><br><span class="line">a();</span><br><span class="line">b();</span><br><span class="line">c();</span><br><span class="line">&#x2F;&#x2F; 当a、b、c函数都执行完成之后，三个setTimeout才会依次执行</span><br></pre></td></tr></table></figure><h2 id="js-异步执行的运行机制"><a href="#js-异步执行的运行机制" class="headerlink" title="js 异步执行的运行机制"></a>js 异步执行的运行机制</h2><ol><li>所有任务都在主线程上执行，形成一个执行栈。</li><li>主线程之外，还存在一个”任务队列”（task queue）。只要异步任务有了运行结果，就在”任务队列”之中放置一个事件。</li><li>**一旦”执行栈”中的所有同步任务执行完毕，系统就会读取”任务队列”**。那些对应的异步任务，结束等待状态，进入执行栈并开始执行。</li><li>主线程不断重复上面的第三步。<h2 id="宏任务与微任务"><a href="#宏任务与微任务" class="headerlink" title="宏任务与微任务:"></a>宏任务与微任务:</h2>异步任务分为 宏任务（macrotask） 与 微任务 (microtask)，不同的API注册的任务会依次进入自身对应的队列中，然后等待 Event Loop 将它们依次压入执行栈中执行。</li></ol><p>宏任务(macrotask)：：<br>script(整体代码)、setTimeout、setInterval、UI 渲染、 I/O、postMessage、 MessageChannel、setImmediate(Node.js 环境)</p><p>微任务(microtask)：<br>Promise、 MutaionObserver、process.nextTick(Node.js环境）</p><h2 id="Event-Loop-事件循环-："><a href="#Event-Loop-事件循环-：" class="headerlink" title="Event Loop(事件循环)："></a>Event Loop(事件循环)：</h2><p>Event Loop(事件循环)中，每一次循环称为 tick, 每一次tick的任务如下：</p><ul><li>执行栈选择最先进入队列的宏任务(通常是script整体代码)，如果有则执行</li><li>检查是否存在 Microtask，如果存在则不停的执行，直至清空 microtask 队列</li><li>更新render(每一次事件循环，浏览器都可能会去更新渲染)</li><li>重复以上步骤</li></ul><p>宏任务 &gt; 所有微任务 &gt; 宏任务，如下图所示：<br><img src="/images/task.jpeg" alt="task.jpeg"></p><p>从上图我们可以看出：</p><ol><li>将所有任务看成两个队列：执行队列与事件队列。</li><li>执行队列是同步的，事件队列是异步的，宏任务放入事件列表，微任务放入执行队列之后，事件队列之前。</li><li>当执行完同步代码之后，就会执行位于执行列表之后的微任务，然后再执行事件列表中的宏任务</li></ol><p>上面提到的demo结果可以这么理解：先执行script宏任务，执行完了之后，再执行其他两个定时器宏任务。</p><h2 id="面试题实践"><a href="#面试题实践" class="headerlink" title="面试题实践"></a>面试题实践</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 执行顺序问题，考察频率挺高的，先自己想答案**</span><br><span class="line">setTimeout(function () &#123;</span><br><span class="line">    console.log(1);</span><br><span class="line">&#125;);</span><br><span class="line">new Promise(function(resolve,reject)&#123;</span><br><span class="line">    console.log(2)</span><br><span class="line">    resolve(3)</span><br><span class="line">&#125;).then(function(val)&#123;</span><br><span class="line">    console.log(val);</span><br><span class="line">&#125;)</span><br><span class="line">console.log(4);</span><br></pre></td></tr></table></figure><p>根据本文的解析，我们可以得到:</p><p>先执行script同步代码<br>先执行new Promise中的console.log(2),then后面的不执行属于微任务<br>然后执行console.log(4)</p><p>执行完script宏任务后，执行微任务，console.log(3)，没有其他微任务了。<br>执行另一个宏任务，定时器，console.log(1)。<br>根据本文的内容，可以很轻松，且有理有据的猜出写出正确答案：2,4,3,1.</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;[&lt;a href=&quot;https://segmentfault.com/a/1190000015317434]&quot;&gt;https://segmentfault.com/a/1190000015317434]&lt;/a&gt;&lt;br&gt;大家都知道js是单线程的脚本语言，在同一时间，只能做同一件</summary>
+      
+    
+    
+    
+    <category term="技术知识" scheme="http://example.com/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/"/>
+    
+    
+    <category term="JavaScript" scheme="http://example.com/tags/JavaScript/"/>
+    
+  </entry>
   
   <entry>
     <title>结构性改革-房产未来趋势、运营方式、政府管控方式</title>
@@ -63,30 +87,6 @@
     
     
     <category term="sql" scheme="http://example.com/tags/sql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>办教育一要普及二要提高</title>
-    <link href="http://example.com/2021/03/15/dengxiaoping/%E5%8A%9E%E6%95%99%E8%82%B2%E4%B8%80%E8%A6%81%E6%99%AE%E5%8F%8A%E4%BA%8C%E8%A6%81%E6%8F%90%E9%AB%98/"/>
-    <id>http://example.com/2021/03/15/dengxiaoping/%E5%8A%9E%E6%95%99%E8%82%B2%E4%B8%80%E8%A6%81%E6%99%AE%E5%8F%8A%E4%BA%8C%E8%A6%81%E6%8F%90%E9%AB%98/</id>
-    <published>2021-03-15T06:22:57.000Z</published>
-    <updated>2021-03-15T12:27:56.088Z</updated>
-    
-    <content type="html"><![CDATA[<p>办教育一要普及二要提高<br>（一九五八年四月七日）<br>这次<code>会议</code>应<strong>集中讨论</strong>中小学问题。总的估计是，<strong>普及教育和扫除文盲</strong>的<code>情况</code>很好，勤工俭学<code>尽头</code>很大，职业中学<code>发展</code>很快。这些都是前几年所没有的好现象，现在应该<strong>注意总结经验</strong>，<strong>适合地调整和解决</strong>已经出现的新问题。</p><p>目前<code>教育方面</code>要解决的问题，主要是普及与提高的问题。我们的<code>方针</code>是，一要普及，二要提高，两者不能偏废。只普及不提高，<code>科学文化</code>不能很快进步；只提高不普及，也不能适应国家各方面的需要。<code>社会主义建设</code>需要有文化的劳动者，<code>所有劳动者</code>也都需要文化。教育普及了，群众的<code>科学文化水平</code>提高了，<code>发明创造</code>就会多起来。<code>我们</code>在任何时候都要坚持“两条腿走路”，做到在普及基础上的提高和在提高指导下的普及。</p><p>现在看来，普及<code>问题</code>比较容易解决，比较难的是如何提高。任何时候都不要忽略职业中学的教学质量问题。<code>职业中学</code>如果只有这几门课，是不可能提高的。现在已经建立起来的各类学校，都不能降低教学质量。提高教学质量，涉及一个学生人数的问题。<code>学校</code>应该该挖掘教学潜力，多招学生，但是不要因此而降低教学质量。学生人数多，又能保证质量的，才是好学校。由此联系到勤工俭学，也要注意这个问题。《工作方法六十条》对勤工俭学的提法很慎重，认为开展勤工俭学是有范围的，并不是不加区分地一律都搞。除了对<code>中等技术学校和技工学校</code>提出要做到自给或者半自给、学生实行半工半读以外，对其他学校都没有提出这样的要求，只要求学生参加劳动。职业中学<code>搞半工半读</code>是肯定的，城市中还应该发展一批职业中学，这类学校很多可以做到半自给或者自给。一般学校要给学生参加劳动的机会。劳动也是教学，是政治思想课。<code>学生</code>参加劳动，一是必须，二要适当，三看可能。<code>普通中学</code>可以根据现有的条件搞一些小农场、小作坊，学生轮流参加生产，或者到农村参加义务劳动。学校要把劳动定到课程中，每周规定半天，主要是使娃娃们养成劳动习惯，加强集体观念。劳动有了收入，也可以拿来帮助贫苦学生，但是不能把劳动搞成社会职业，不要以赚钱为目的，一提倡赚钱，就容易计较个人利益。城市中学的学生年龄小，又没有好多门路，不可能实行半工半读。<code>个别中学</code>如果有条件能够做到半子给或者自给的，也可以搞，但是不要影响学生的学习。总之，学校要保证提高教学质量，否则就不能说是成功的。</p><p>成都<code>会议</code>已经确定，教育经费整个不减，分到各省的也不减少。各省再想想办法，争取你那这么多钱办更多的事，但要保证原有的教学质量。必要的<code>教学器材</code>不能减少。<code>经费</code>使用不宜过紧。我们节约经费有个原则，不能因为节约经费而影响教学质量。如果教学质量降低了，过几年就能看出来，那时大学招生就要发生困难。</p><p><code>师资问题</code>要注意。正规大学、中学现有的师资质量不能降低。至于近几年大量发展起来的学校，现在不要强调其师资是否合格，办起来就是好事，以后慢慢调整和提高。当然，这么多职业中学办起来了，牵涉到以后高等学校如何办的问题。有的国家中小学<code>质量</code>差，吃了亏。我们无论如何要保证有一批学生基础课学得好，否则将来要吃大亏。</p><p>在<code>宣传</code>上，还是毛主席的话，心要热，头要冷。现在主要不是抓指标，而是抓措施。只要措施是积极的，就不是机会主义。河南提出一年做到普及小学教育，也以提两年为好，及时两年实现不了也不要紧，慢一点也不是不光荣，不是机会主义。不要所有的省都照河南那样办。只要心热，措施积极，迟一两年完成也可以。</p><p><code>教育部</code>以后要把中小学教育的相当一部分交给地方去办，各省能办多少，由省里根据实际情况去安排，教育部可以不管。教育部要管教材，不能设想我们国家可以没有够的中学教材。<code>中小学教材</code>可以组织各地去编，不一定要教育部自己关起门来搞。教材、教育制度，教育部要出主意，提方案，还要主意抓典型，总结先进经验，加以推广。这样做，就能够促进我国教育事业的发展。</p><h2 id="逻辑"><a href="#逻辑" class="headerlink" title="逻辑"></a>逻辑</h2><ul><li>一个问题，三种表述，得到一个结果，解决。</li></ul>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;办教育一要普及二要提高&lt;br&gt;（一九五八年四月七日）&lt;br&gt;这次&lt;code&gt;会议&lt;/code&gt;应&lt;strong&gt;集中讨论&lt;/strong&gt;中小学问题。总的估计是，&lt;strong&gt;普及教育和扫除文盲&lt;/strong&gt;的&lt;code&gt;情况&lt;/code&gt;很好，勤工俭学&lt;code&gt;尽</summary>
-      
-    
-    
-    
-    <category term="读书" scheme="http://example.com/categories/%E8%AF%BB%E4%B9%A6/"/>
-    
-    
-    <category term="邓小平" scheme="http://example.com/tags/%E9%82%93%E5%B0%8F%E5%B9%B3/"/>
     
   </entry>
   
