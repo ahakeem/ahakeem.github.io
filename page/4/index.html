@@ -159,6 +159,132 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/04/nodejs/JavaScript_%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="闫海江">
+      <meta itemprop="description" content="web前端 java android ios 宅">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="五五">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/04/nodejs/JavaScript_%E5%87%BD%E6%95%B0/" class="post-title-link" itemprop="url">JavaScript中的函数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-04 22:24:02 / Modified: 23:43:29" itemprop="dateCreated datePublished" datetime="2021-03-04T22:24:02+08:00">2021-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">技术知识</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><blockquote>
+<p>函数是由事件驱动的或者当它被调用时执行的可重复使用的代码块。</p>
+</blockquote>
+<h3 id="函数声明与函数表达式"><a href="#函数声明与函数表达式" class="headerlink" title="函数声明与函数表达式"></a>函数声明与函数表达式</h3><blockquote>
+<p>对于<strong>函数声明</strong>解释器会首先读取，并使其在执行任何代码之前可用；<br>对于<strong>函数表达式</strong>，则必须等到解释器执行到它所在的代码行，才会被真正解析。<br>例如下面例子，函数表达式test2必须声明在其调用之前才可用</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">console.log(test1(1, 2)); &#x2F;&#x2F; 3</span><br><span class="line">console.log(test2(1, 2)); &#x2F;&#x2F; test2 is not defined</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;函数声明</span><br><span class="line">function test1(a, b)&#123;</span><br><span class="line">    return a + b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;函数表达式</span><br><span class="line">const test2 &#x3D; function f(a, b)&#123;</span><br><span class="line">    return a + b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="内置函数"><a href="#内置函数" class="headerlink" title="内置函数"></a>内置函数</h3><ul>
+<li>push()<blockquote>
+<p>数组添加新值后的返回值，返回当前数组的Length。<br><code>let a = [].push(&#39;test&#39;);</code> 输出a的值为1而不是<code>[&#39;test&#39;]</code>，因为<code>push()</code>返回的是数组的长度。</p>
+</blockquote>
+</li>
+<li>arguments对象<blockquote>
+<p>系统内置的arguments对象，可以用于获取函数参数、参数长度等</p>
+</blockquote>
+<h3 id="call和apply的使用与区别"><a href="#call和apply的使用与区别" class="headerlink" title="call和apply的使用与区别"></a>call和apply的使用与区别</h3></li>
+<li>apply使用情况<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function box(num1,num2)&#123;</span><br><span class="line">    return num1+num2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function sum(num1,num2)&#123;</span><br><span class="line">    &#x2F;&#x2F;this 表示全局作用域，浏览器环境下window，node环境global，[]表示传递的参数</span><br><span class="line">    return box.apply(this,[num1,num2]);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;或者下面写法arguments可以当数组传递</span><br><span class="line">    &#x2F;&#x2F;return box.apply(this,arguments);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(sum(10,10)); &#x2F;&#x2F;输出结果: 20</span><br></pre></td></tr></table></figure></li>
+<li>call的使用示例<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function box(num1,num2)&#123;</span><br><span class="line">    return num1+num2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function sum2(num1,num2)&#123;</span><br><span class="line">    return box.call(this,num1,num2);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(sum(10,10)); &#x2F;&#x2F;输出结果: 20</span><br></pre></td></tr></table></figure>
+apply传递参数是按照数组传递，call是一个一个传递</li>
+</ul>
+<h3 id="面试"><a href="#面试" class="headerlink" title="面试"></a>面试</h3><h3 id="引用传递"><a href="#引用传递" class="headerlink" title="引用传递"></a>引用传递</h3><blockquote>
+<p>javascript没有引用传递，如果传递的参数是一个值，是按值传递；如果传递的是一个对象，则传递的是一个对象的引用。</p>
+</blockquote>
+<ul>
+<li>示例一：js代码按值传递<br>如果按引用传递，那么函数里面的num会变成类似全局变量，最后输出60<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function box(num)&#123; &#x2F;&#x2F; 按值传递</span><br><span class="line">    num+&#x3D;10;</span><br><span class="line">    return num;</span><br><span class="line">&#125;</span><br><span class="line">var num&#x3D;50;</span><br><span class="line"></span><br><span class="line">console.log(box(num));  &#x2F;&#x2F; 60</span><br><span class="line">console.log(num);        &#x2F;&#x2F; 50</span><br></pre></td></tr></table></figure></li>
+<li>示例二：php代码传递一个参数：<br>php中的引用传递，会改变外部的num值，最后num也会输出60。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function box(&amp;$num)&#123; </span><br><span class="line">    &#x2F;&#x2F;加上&amp;符号将num变成全局变量</span><br><span class="line">    $num+&#x3D;10;</span><br><span class="line">    return $num;</span><br><span class="line">&#125;</span><br><span class="line">$num &#x3D; 50;</span><br><span class="line">echo box($num);    &#x2F;&#x2F; 60</span><br><span class="line">echo $num;    &#x2F;&#x2F; 60</span><br></pre></td></tr></table></figure></li>
+<li>示例三：js代码传递一个对象<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function box(obj)&#123; &#x2F;&#x2F; 按对象传递</span><br><span class="line">    obj.num+&#x3D;10;</span><br><span class="line"></span><br><span class="line">    return obj.num;</span><br><span class="line">&#125;</span><br><span class="line">var obj &#x3D; &#123; num: 50 &#125;;</span><br><span class="line"></span><br><span class="line">console.log(box(obj));  &#x2F;&#x2F; 60</span><br><span class="line">console.log(obj.num);    &#x2F;&#x2F; 60</span><br></pre></td></tr></table></figure>
+<h3 id="匿名函数与闭包"><a href="#匿名函数与闭包" class="headerlink" title="匿名函数与闭包"></a>匿名函数与闭包</h3><blockquote>
+<p>匿名函数就是没有名字的函数，闭包是可访问一个函数作用域里变量的函数，由于闭包作用域返回的局部变量资源不会被立刻销毁回收，所以可能会占用更多的内存。过度使用闭包会导致性能下降，建议在非常有必要的时候才使用闭包。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>匿名函数的自我执行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(function(num)&#123;</span><br><span class="line">        return num;</span><br><span class="line">    &#125;)(1) &#x2F;&#x2F;1</span><br></pre></td></tr></table></figure>
+<p><strong>函数里放一个匿名函数将会产生闭包</strong></p>
+<ul>
+<li>使用局部变量实现累加功能。</li>
+<li>定义函数test1，返回一个匿名函数形成一个闭包</li>
+<li>将test1赋给test2，此时test2会初始化变量a，值为test1返回的匿名函数</li>
+<li>执行test2()<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">function test1()&#123;</span><br><span class="line">    var a &#x3D; 1;</span><br><span class="line"></span><br><span class="line">    return function()&#123;</span><br><span class="line">        &#x2F;&#x2F; a++;</span><br><span class="line">        &#x2F;&#x2F; return a;</span><br><span class="line">        &#x2F;&#x2F; 或以下写法</span><br><span class="line">        return ++a;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var test2 &#x3D; test1();</span><br><span class="line"></span><br><span class="line">console.log(test2()); &#x2F;&#x2F; 2</span><br><span class="line">console.log(test2()); &#x2F;&#x2F; 3</span><br><span class="line">console.log(test2()); &#x2F;&#x2F; 4</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;不能这样写,这样外层函数每次也会执行，从而age每次都会初始化</span><br><span class="line">console.log(test1()()); &#x2F;&#x2F; 2</span><br><span class="line">console.log(test1()()); &#x2F;&#x2F; 2</span><br><span class="line">console.log(test1()()); &#x2F;&#x2F; 2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>闭包中使用this对象将会导致的一些问题</strong></p>
+<blockquote>
+<p>在闭包中使用this对象也可能会导致一些问题，this对象是在运行时基于函数的执行环境绑定的，如果this在全局范围就是window，如果在对象内部就指向这个对象。而闭包却在运行时指向window的，因为闭包并不属于这个对象的属性或方法<br>返回object</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var box&#x3D;&#123;</span><br><span class="line">    getThis:function()&#123;</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(box.getThis()); &#x2F;&#x2F; &#123; getThis: [Function: getThis] &#125;</span><br></pre></td></tr></table></figure>
+<p>闭包中的this将返回全局对象，浏览器中<code>window</code>对象，Node.js中<code>global</code>对象，可以使用对象冒充或者赋值来解决闭包中this全局对象问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var box&#x3D;&#123;</span><br><span class="line">    user: &#39;zs&#39;,</span><br><span class="line">    getThis:function()&#123;</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return this;   </span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(box.getThis()());</span><br></pre></td></tr></table></figure>
+<p><strong>对象冒充</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">var box&#x3D;&#123;</span><br><span class="line">    user: &#39;zs&#39;,</span><br><span class="line">    getThis:function()&#123;</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return this;   </span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(box.getThis().call(box)); &#x2F;&#x2F; &#123; user: &#39;zs&#39;, getThis: [Function: getThis] &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>赋值</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">var box&#x3D;&#123;</span><br><span class="line">    user: &#39;zs&#39;,</span><br><span class="line">    getThis:function()&#123;</span><br><span class="line">        var that &#x3D; this; &#x2F;&#x2F; 此时的this指的是box对象</span><br><span class="line">        return function()&#123;</span><br><span class="line">            return that.user;   </span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">console.log(box.getThis()()); &#x2F;&#x2F; zs</span><br></pre></td></tr></table></figure>
+<p><strong>一个例子看懂循环和闭包之间的关系</strong><br>下例，循环中的每个迭代器在运行时都会给自己捕获一个i的副本，但是根据作用域的工作原理，尽管循环中的五个函数分别是在各个迭代器中分别定义的，但是它们都会被封闭在一个共享的全局作用域中，实际上只有一个i，结果每次都会输出6</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(var i&#x3D;1; i &lt;&#x3D; 5; i++)&#123;</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">        console.log(i);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解决上面的问题，在每个循环迭代中都需要一个闭包作用域，下面示例，循环中的每个迭代器都会生成一个新的作用域。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">for(var i&#x3D;1; i &lt;&#x3D; 5; i++)&#123;</span><br><span class="line">    (function(j)&#123;</span><br><span class="line">        setTimeout(function()&#123;</span><br><span class="line">            console.log(j);</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以使用let解决，let声明，可以用来劫持块作用域，并且在这个块作用域中声明一个变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(let i&#x3D;1; i &lt;&#x3D; 5; i++)&#123;</span><br><span class="line">    setTimeout(function()&#123;</span><br><span class="line">        console.log(i);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>函数表达式实现一个阶乘函数</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const factorial &#x3D; (function f(num)&#123;</span><br><span class="line">    if(num &lt;&#x3D; 1)&#123;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        return num * f(num -1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">console.log(factorial(3)); &#x2F;&#x2F; 6</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/02/%E9%98%85%E8%AF%BB%E7%94%B5%E5%AD%90%E4%B9%A6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -838,7 +964,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/28/book/1/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/28/book/%E5%8A%9E%E5%A5%BD%E5%AD%A6%E4%B9%A0%EF%BC%8C%E5%9F%B9%E5%85%BB%E5%B9%B2%E9%83%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -852,7 +978,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/02/28/book/1/" class="post-title-link" itemprop="url">词组</a>
+            <a href="/2021/02/28/book/%E5%8A%9E%E5%A5%BD%E5%AD%A6%E4%B9%A0%EF%BC%8C%E5%9F%B9%E5%85%BB%E5%B9%B2%E9%83%A8/" class="post-title-link" itemprop="url">词组</a>
         </h2>
 
         <div class="post-meta">
@@ -869,7 +995,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-15 11:31:01" itemprop="dateModified" datetime="2021-03-15T11:31:01+08:00">2021-03-15</time>
+                <time title="Modified: 2021-07-04 23:26:03" itemprop="dateModified" datetime="2021-07-04T23:26:03+08:00">2021-07-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -892,89 +1018,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
-      
-    </div>
+          <h3 id="办好学习，培养干部"><a href="#办好学习，培养干部" class="headerlink" title="办好学习，培养干部"></a>办好学习，培养干部</h3><p>注意 抓 重视</p>
+<p>我们是<strong>搞建设</strong>的，<strong>干部</strong>已成决定性因素。<br>我们的<strong>状况</strong>是，一方面<strong>不够用</strong>，另一方面又<strong>有浪费</strong>。</p>
+<p>要充分发挥现有干部作用，同时<strong>培养大批建设人才</strong>。<br>主要表现<br>现在<br>应该<br>我们认为</p>
+<p>如果<br>对于<br>实际上，<br>过去是口头，现在要认真。</p>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/28/202102/ps%20%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="闫海江">
-      <meta itemprop="description" content="web前端 java android ios 宅">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="五五">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/28/202102/ps%20%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">ps 基础学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-02-28 16:55:42 / Modified: 17:00:06" itemprop="dateCreated datePublished" datetime="2021-02-28T16:55:42+08:00">2021-02-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>1、图片大小概念</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">尺寸大小，内存大小</span><br><span class="line">保存的品质设置的72</span><br></pre></td></tr></table></figure>
-<p>2、存储格式<br>3、图层知识</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">选中矩形 前景色 填充 取消选择</span><br><span class="line">叠加 自动选择勾选 移动工具 互换位置 不透明度设置</span><br></pre></td></tr></table></figure>
-<p>4、图片嵌套图层</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">选中图层，移动图片到图层中，alt放在图层与图片中间 点击 弯曲的图形</span><br></pre></td></tr></table></figure>
-<p>5、图层蒙版</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">形状工具 黑白互擦</span><br></pre></td></tr></table></figure>
-<p>6、创建剪切蒙版</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">两个文字合并一个</span><br></pre></td></tr></table></figure>
-<p>7、图层样式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">多层对齐</span><br></pre></td></tr></table></figure>
-<p>8、魔棒</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctrl + +</span><br></pre></td></tr></table></figure>
-<p>9、ps切图步骤</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">复制图层到新建</span><br><span class="line">alt + i + r 裁剪 依次按</span><br><span class="line">ctrl + alt + shift + s 保存</span><br><span class="line">裁剪图标 复制到图层 ， 删除背景，并复制样式 就可以做到 背景透明。</span><br><span class="line">快键键</span><br><span class="line">ctrl + n 窗口</span><br><span class="line">alt + delete 填充前景色</span><br><span class="line">ctrl + D 取消选择</span><br><span class="line">ctrl + G 创建组</span><br><span class="line">ctrl + T + shift 等比发大</span><br><span class="line">ctrl + del 填充背景色</span><br><span class="line">ctrl + alt 同时 鼠标点击 加减图层 选择图层</span><br><span class="line">v 位移工具</span><br><span class="line">Ctrl + j 原位复制 粘贴图层内容</span><br><span class="line">ctrl + alt + z 后退操作</span><br><span class="line">视图 Ctrl + r 标尺 视图 对齐 对齐</span><br><span class="line">Ctrl + E 合并</span><br><span class="line">alt + e + s 描边</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1057,7 +1105,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
